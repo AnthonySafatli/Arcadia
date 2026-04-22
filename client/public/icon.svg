@@ -1,0 +1,7 @@
+<!-- save as icon.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+  <rect x="2" y="2" width="16" height="16" rx="2" fill="#39ff8a" opacity="0.9"/>
+  <rect x="22" y="2" width="16" height="16" rx="2" fill="#1db954" opacity="0.6"/>
+  <rect x="2" y="22" width="16" height="16" rx="2" fill="#1db954" opacity="0.6"/>
+  <rect x="22" y="22" width="16" height="16" rx="2" fill="#39ff8a" opacity="0.3"/>
+</svg>
