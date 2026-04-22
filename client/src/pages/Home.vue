@@ -1,10 +1,9 @@
-<template>
-    <div class="page home">
-        <!-- Background Effects -->
-        <div class="grid-bg" />
-        <div class="glow-orb" />
+<script setup>
+import Page from '@/components/Page.vue'
+</script>
 
-        <!-- Content -->
+<template>
+    <Page page-class="home" glow-orb>
         <div class="content">
             <!-- Logo -->
             <div class="logo-block">
@@ -37,26 +36,10 @@
 
             <div class="version-tag">v0.0.1 — early access</div>
         </div>
-    </div>
+    </Page>
 </template>
 
 <style scoped>
-.home {
-    overflow: hidden;
-}
-
-.glow-orb {
-    position: fixed;
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, var(--green-glow) 0%, transparent 70%);
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    animation: pulse 6s ease-in-out infinite;
-}
-
 @keyframes pulse {
     0%,
     100% {
