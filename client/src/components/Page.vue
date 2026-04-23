@@ -1,11 +1,3 @@
-<script setup>
-defineProps({
-    pageClass: { type: String, default: '' },
-    backBtn: { type: Boolean, default: false },
-    glowOrb: { type: Boolean, default: false },
-})
-</script>
-
 <template>
     <div class="page" :class="pageClass">
         <!-- Background Effects -->
@@ -19,6 +11,14 @@ defineProps({
         <slot />
     </div>
 </template>
+
+<script setup>
+defineProps({
+    pageClass: { type: String, default: '' },
+    backBtn: { type: Boolean, default: false },
+    glowOrb: { type: Boolean, default: false },
+})
+</script>
 
 <style>
 .home {

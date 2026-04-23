@@ -19,7 +19,7 @@
 import type { SelectItem } from '@/types/SelectType'
 
 import Page from '@/components/Page.vue'
-import Select from '@/components/Select.vue'
+import Select from './Select.vue'
 
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'

@@ -6,7 +6,7 @@
                 <h2 class="title">Enter room code</h2>
             </div>
 
-            <div class="code-input-block card">
+            <div class="code-input-block card" @click="inputRef?.focus()">
                 <div class="code-display">
                     <span
                         v-for="(char, i) in paddedCode"
@@ -16,8 +16,9 @@
                             filled: char !== '·',
                             cursor: i === code.length && code.length < 6,
                         }"
-                        >{{ char }}</span
                     >
+                        {{ char }}
+                    </span>
                 </div>
 
                 <!-- Hidden actual input -->
@@ -27,10 +28,9 @@
                     maxlength="6"
                     class="hidden-input"
                     @keydown.enter="join"
+                    @blur="inputRef?.focus()"
                     autofocus
                 />
-
-                <p class="hint" @click="inputRef?.focus()">tap to type</p>
             </div>
 
             <button class="btn btn-primary join-btn" :disabled="code.length < 6" @click="join">
@@ -104,7 +104,6 @@ function join() {
     display: flex;
     gap: 10px;
     justify-content: center;
-    margin-bottom: 16px;
 }
 
 .code-char {
@@ -132,17 +131,6 @@ function join() {
 
 .code-char.cursor {
     border-color: var(--green-bright);
-    animation: blink 1s step-end infinite;
-}
-
-@keyframes blink {
-    0%,
-    100% {
-        border-color: var(--green-bright);
-    }
-    50% {
-        border-color: var(--bg-border);
-    }
 }
 
 .hidden-input {
