@@ -24,14 +24,16 @@
     </div>
 </template>
 
-<script setup lang="ts" generic="T extends { id: string | number }">
-const props = defineProps<{
-    items: T[]
-    modelValue: T['id'] | null
+<script setup lang="ts">
+import type { SelectItem } from '@/types/SelectItem'
+
+defineProps<{
+    items: SelectItem[]
+    modelValue: string | null
 }>()
 
-const emit = defineEmits<{
-    (e: 'update:modelValue', value: T['id']): void
+defineEmits<{
+    (e: 'update:modelValue', value: string): void
 }>()
 </script>
 

@@ -2,8 +2,8 @@ import os
 from flask import Flask, send_from_directory
 from flask_socketio import SocketIO
 
-from server.routes.api import api_bp
-from server.sockets.events import register_socket_events
+from routes.api import api_bp
+from sockets.events import register_socket_events
 
 import games  # noqa — triggers all @register decorators
 

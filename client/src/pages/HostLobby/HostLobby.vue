@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SelectItem } from '@/types/SelectType'
+import type { SelectItem } from '@/types/SelectItem'
 
 import Page from '@/components/Page.vue'
 import Select from './Select.vue'
