@@ -1,0 +1,48 @@
+from abc import ABC, abstractmethod
+from typing import Any
+
+
+class BaseGame(ABC):
+    """
+    All games extend this. The engine calls these methods — games never touch sockets.
+    """
+
+    #: Minimum players required to start
+    MIN_PLAYERS: int = 2
+    #: Maximum players allowed
+    MAX_PLAYERS: int = 2
+    #: Human-readable name shown in lobby
+    NAME: str = "Unnamed Game"
+
+    def __init__(self, room_code: str, players: list[dict]):
+        """
+        players: list of {"player_id": str, "nickname": str}
+        """
+        self.room_code = room_code
+        self.players = players  # ordered list
+
+    @abstractmethod
+    def on_start(self) -> dict:
+        """Return the initial game state broadcast to all players."""
+
+    @abstractmethod
+    def on_action(self, player_id: str, action: dict) -> dict:
+        """
+        Handle a player action. Mutate internal state, return new state.
+        Raise ValueError with a message if the action is invalid.
+        """
+
+    @abstractmethod
+    def is_over(self) -> str | None:
+        """Return winning player_id, 'draw', or None if game is still going."""
+
+    def get_state(self, player_id: str) -> dict:
+        """
+        Override to return a player-specific view (fog of war, hidden cards, etc.).
+        Default: return the full shared state.
+        """
+        return self.on_start.__func__  # subclasses should store state and return it
+
+    @property
+    def player_ids(self) -> list[str]:
+        return [p["player_id"] for p in self.players]
