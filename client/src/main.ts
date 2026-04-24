@@ -6,6 +6,7 @@ import Home from './pages/Home/Home.vue'
 import HostLobby from './pages/HostLobby/HostLobby.vue'
 import JoinRoom from './pages/JoinRoom/JoinRoom.vue'
 import GameRoom from './pages/GameRoom/GameRoom.vue'
+import Stats from './pages/Stats/Stats.vue'
 import NotFound from './pages/NotFound/NotFound.vue'
 
 import './assets/global.css'
@@ -17,6 +18,7 @@ const router = createRouter({
         { path: '/host', name: 'host', component: HostLobby },
         { path: '/join', name: 'join', component: JoinRoom },
         { path: '/room/:id', name: 'room', component: GameRoom },
+        { path: '/stats', name: 'stats', component: Stats },
         { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound },
     ],
 })
