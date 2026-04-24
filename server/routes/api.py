@@ -3,12 +3,10 @@ from engine import game_registry, room_manager
 
 api_bp = Blueprint("api", __name__)
 
-
 @api_bp.route("/games")
 def api_list_games():
     """All available game types."""
     return jsonify(game_registry.list_games())
-
 
 @api_bp.route("/rooms", methods=["POST"])
 def api_create_room():
@@ -31,7 +29,6 @@ def api_create_room():
 
     room = room_manager.create_room(game_slug, player_id, nickname)
     return jsonify(room_manager.room_to_dict(room)), 201
-
 
 @api_bp.route("/rooms/<code>")
 def api_get_room(code):

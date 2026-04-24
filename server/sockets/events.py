@@ -3,14 +3,12 @@ from flask_socketio import emit, join_room as sio_join_room, leave_room as sio_l
 
 from engine import room_manager
 
-
 def register_socket_events(socketio_instance):
 
     @socketio_instance.on("connect")
     def on_connect():
         # Client connects but doesn't join a room yet
         pass
-
 
     @socketio_instance.on("disconnect")
     def on_disconnect():
@@ -28,7 +26,6 @@ def register_socket_events(socketio_instance):
             },
             to=room.code,
         )
-
 
     @socketio_instance.on("join_room")
     def on_join_room(data):
@@ -75,7 +72,6 @@ def register_socket_events(socketio_instance):
             to=room_code,
             include_self=False,
         )
-
 
     @socketio_instance.on("start_game")
     def on_start_game(data):

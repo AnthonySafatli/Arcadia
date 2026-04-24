@@ -12,7 +12,7 @@ import games  # noqa — triggers all @register decorators
 BASE_DIR = os.path.dirname(__file__)
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 
-app = Flask(__name__, static_folder=STATIC_DIR, static_url_path="/")
+app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-change-me")
 
 socketio = SocketIO(
@@ -24,7 +24,7 @@ socketio = SocketIO(
 app.register_blueprint(api_bp, url_prefix="/api")
 register_socket_events(socketio)
 
-# Catch-all → serve Vue app  (must be last)
+# Serve Vue app 
 
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
