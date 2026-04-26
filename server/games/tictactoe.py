@@ -1,7 +1,6 @@
 from engine.base_game import BaseGame
 from engine.game_registry import register
 
-
 @register("tictactoe")
 class TicTacToe(BaseGame):
     NAME = "Tic Tac Toe"

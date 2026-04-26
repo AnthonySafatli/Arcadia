@@ -5,7 +5,6 @@ api_bp = Blueprint("api", __name__)
 
 @api_bp.route("/games")
 def api_list_games():
-    """All available game types."""
     return jsonify(game_registry.list_games())
 
 @api_bp.route("/rooms", methods=["POST"])

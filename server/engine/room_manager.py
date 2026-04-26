@@ -7,15 +7,13 @@ from engine.base_game import BaseGame
 # How long (seconds) a disconnected player has to reconnect before being removed
 RECONNECT_GRACE_PERIOD = 60
 
-
 @dataclass
 class Player:
-    player_id: str        # Persistent token stored in browser (localStorage)
+    player_id: str                  # Persistent token stored in browser (localStorage)
     nickname: str
-    socket_id: str | None = None   # Current socket connection (changes on reconnect)
+    socket_id: str | None = None    # Current socket connection (changes on reconnect)
     connected: bool = False
     disconnected_at: float | None = None
-
 
 @dataclass
 class Room:
@@ -27,12 +25,10 @@ class Room:
     game: BaseGame | None = None
     created_at: float = field(default_factory=time.time)
 
-
 # In-memory store. Replace with Redis for multi-process deployments.
 _rooms: dict[str, Room] = {}
 # socket_id → player_id (for fast lookup on disconnect)
 _socket_to_player: dict[str, tuple[str, str]] = {}  # socket_id → (room_code, player_id)
-
 
 # Room lifecycle
 
@@ -43,7 +39,6 @@ def generate_code() -> str:
         if code not in _rooms:
             return code
 
-
 def create_room(game_slug: str, host_player_id: str, host_nickname: str) -> Room:
     code = generate_code()
     room = Room(code=code, game_slug=game_slug, host_player_id=host_player_id)
@@ -52,14 +47,11 @@ def create_room(game_slug: str, host_player_id: str, host_nickname: str) -> Room
     _rooms[code] = room
     return room
 
-
 def get_room(code: str) -> Room | None:
     return _rooms.get(code.upper())
 
-
 def list_rooms() -> list[Room]:
     return list(_rooms.values())
-
 
 # Player join / reconnect
 
@@ -95,7 +87,6 @@ def join_room(code: str, player_id: str, nickname: str, socket_id: str) -> tuple
     _socket_to_player[socket_id] = (room.code, player_id)
     return room, player, is_reconnect
 
-
 def player_disconnect(socket_id: str) -> tuple[Room, Player] | None:
     """Called when a socket disconnects. Marks player as disconnected."""
     entry = _socket_to_player.pop(socket_id, None)
@@ -113,7 +104,6 @@ def player_disconnect(socket_id: str) -> tuple[Room, Player] | None:
 
 def register_socket(socket_id: str, room_code: str, player_id: str):
     _socket_to_player[socket_id] = (room_code, player_id)
-
 
 # Game start
 
@@ -136,10 +126,7 @@ def start_game(room: Room) -> dict:
     room.status = "playing"
     return room.game.on_start()
 
-
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
 
 def room_to_dict(room: Room) -> dict:
     from engine.game_registry import get_game_class

@@ -2,7 +2,6 @@ from engine.base_game import BaseGame
 
 _registry: dict[str, type[BaseGame]] = {}
 
-
 def register(slug: str):
     """Decorator to register a game class under a slug."""
     def decorator(cls: type[BaseGame]):
@@ -10,10 +9,8 @@ def register(slug: str):
         return cls
     return decorator
 
-
 def get_game_class(slug: str) -> type[BaseGame] | None:
     return _registry.get(slug)
-
 
 def list_games() -> list[dict]:
     """Return metadata for all registered games (for the lobby)."""
