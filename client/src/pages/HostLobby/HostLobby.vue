@@ -17,10 +17,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useQuery } from '@tanstack/vue-query'
+import { useQuery, useMutation } from '@tanstack/vue-query'
+import { usePlayerId } from '@/composables/usePlayerId'
+
+import type { Game } from '@/dtos/GameDto'
+import type { NewRoom, Room } from '@/dtos/RoomDto'
 
 import type { SelectItem } from '@/types/SelectItem'
-import type { Game } from '@/dtos/GameDto'
 
 import Page from '@/components/Page.vue'
 import Select from './Select.vue'
@@ -31,6 +34,14 @@ import { useRouter } from 'vue-router'
 const { data } = useQuery<Game[]>({
     queryKey: ['games'],
     queryFn: (): Promise<Game[]> => fetch('/api/games').then((r) => r.json()),
+})
+
+const { mutate } = useMutation<Room, Error, NewRoom>({
+    mutationFn: (newRoom: NewRoom) =>
+        fetch('/api/rooms', {
+            method: 'POST',
+            body: JSON.stringify(newRoom),
+        }).then((r) => r.json()),
 })
 
 const router = useRouter()
@@ -48,9 +59,19 @@ const selectOptions = computed<SelectItem[]>(
 
 function launch() {
     if (!selected.value) return
-    // TODO: create room via server, get room ID back
-    const mockRoomId = Math.random().toString(36).slice(2, 8).toUpperCase()
-    router.push(`/room/${mockRoomId}`)
+
+    const playerId = usePlayerId()
+
+    const newRoom: NewRoom = {
+        game_slug: selected.value,
+        player_id: playerId,
+        nickname: 'test name',
+    }
+    mutate(newRoom, {
+        onSuccess: (room) => {
+            router.push(`/room/${room.code}`)
+        },
+    })
 }
 </script>
 
