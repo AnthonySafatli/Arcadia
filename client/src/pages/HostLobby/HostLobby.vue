@@ -6,7 +6,7 @@
                 <h2 class="title">Choose your game</h2>
             </div>
 
-            <Select v-model="selected" :items="selectOptions" />
+            <Select v-if="selectOptions.length > 0" v-model="selected" :items="selectOptions" />
 
             <button class="btn btn-primary launch-btn" :disabled="!selected" @click="launch">
                 Launch Room
@@ -16,7 +16,11 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useQuery } from '@tanstack/vue-query'
+
 import type { SelectItem } from '@/types/SelectItem'
+import type { Game } from '@/dtos/GameDto'
 
 import Page from '@/components/Page.vue'
 import Select from './Select.vue'
@@ -24,22 +28,23 @@ import Select from './Select.vue'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+const { data } = useQuery<Game[]>({
+    queryKey: ['games'],
+    queryFn: (): Promise<Game[]> => fetch('/api/games').then((r) => r.json()),
+})
+
 const router = useRouter()
 const selected = ref<string | null>(null)
 
-const games = [
-    { id: 'tictactoe', name: 'Tic-tac-toe', icon: '⊞', players: '2 players', type: 'Classic' },
-    { id: 'pong', name: 'Pong', icon: '◈', players: '2 players', type: 'Arcade' },
-    { id: 'chess', name: 'Chess', icon: '♟', players: '2 players', type: 'Strategy' },
-    { id: 'checkers', name: 'Checkers', icon: '●', players: '2 players', type: 'Classic' },
-]
-
-const selectOptions: SelectItem[] = games.map((x) => ({
-    id: x.id,
-    name: x.name,
-    icon: x.icon,
-    tags: [x.players, x.type],
-}))
+const selectOptions = computed<SelectItem[]>(
+    () =>
+        data.value?.map((x) => ({
+            id: x.slug,
+            name: x.name,
+            icon: '⊞',
+            tags: [`${x.min_players}-${x.max_players} Players`, 'x.type'],
+        })) ?? [],
+)
 
 function launch() {
     if (!selected.value) return
