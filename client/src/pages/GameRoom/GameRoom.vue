@@ -8,15 +8,15 @@
                 <span class="room-code">{{ roomId }}</span>
             </div>
 
-            <StatusBadge :status="statusClass" :label="gameState" />
+            <StatusBadge :status="statusClass" :label="roomStatus" />
         </header>
 
         <main class="room-body">
             <!-- Loading -->
-            <Spinner v-if="gameState === 'loading'" />
+            <Spinner v-if="roomStatus === 'loading'" />
 
             <!-- Waiting state -->
-            <WaitingScreen v-else-if="gameState === 'waiting'" :room-id="roomId" />
+            <WaitingScreen v-else-if="roomStatus === 'waiting'" :room-id="roomId" />
 
             <!-- Game canvas placeholder -->
             <div v-else class="game-canvas">
@@ -34,32 +34,36 @@ import Spinner from '@/components/Spinner.vue'
 
 import type { Room } from '@/dtos/RoomDto'
 
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, type ComputedRef } from 'vue'
 import { useRoute } from 'vue-router'
 import { useQuery } from '@tanstack/vue-query'
 
 const route = useRoute()
 const roomId = computed(() => route.params.id)
 
-const gameState = ref('loading')
-
-const { data } = useQuery<Room>({
+const {
+    data: room,
+    isError,
+    isPending,
+} = useQuery<Room>({
     queryKey: ['rooms', roomId],
     queryFn: (): Promise<Room> => fetch(`/api/rooms/${roomId.value}`).then((r) => r.json()),
 })
 
-watch(data, (room) => {
-    if (room?.status) gameState.value = room.status
-})
+const roomStatus: ComputedRef<string | null> = computed(() =>
+    (room.value?.status ?? isPending) ? 'loading' : isError ? 'error' : null,
+)
 
 const statusClass = computed(
     () =>
         ({
+            nothing: '',
+            error: 'red',
             loading: 'yellow',
             waiting: 'yellow',
             playing: 'green',
             over: 'red',
-        })[gameState.value],
+        })[roomStatus.value ?? 'nothing'],
 )
 </script>
 
