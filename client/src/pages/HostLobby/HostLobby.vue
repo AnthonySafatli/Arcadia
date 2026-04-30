@@ -19,6 +19,7 @@
 import { computed } from 'vue'
 import { useQuery, useMutation } from '@tanstack/vue-query'
 import { usePlayerId } from '@/composables/usePlayerId'
+import { useNickname } from '@/composables/useNickname'
 
 import type { Game } from '@/dtos/GameDto'
 import type { NewRoom, Room } from '@/dtos/RoomDto'
@@ -61,11 +62,12 @@ function launch() {
     if (!selected.value) return
 
     const playerId = usePlayerId()
+    const nickname = useNickname()
 
     const newRoom: NewRoom = {
         game_slug: selected.value,
         player_id: playerId,
-        nickname: 'test name',
+        nickname: nickname,
     }
     mutate(newRoom, {
         onSuccess: (room) => {
