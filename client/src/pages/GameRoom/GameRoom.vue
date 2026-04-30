@@ -16,7 +16,11 @@
             <Spinner v-if="roomStatus === 'loading'" />
 
             <!-- Waiting state -->
-            <WaitingLobby v-else-if="roomStatus === 'waiting'" :room="room!" />
+            <WaitingLobby
+                v-else-if="roomStatus === 'waiting'"
+                :room="room!"
+                :on-connect="onConnect"
+            />
 
             <!-- Game canvas placeholder -->
             <div v-else class="game-canvas">
@@ -34,26 +38,28 @@ import Spinner from '@/components/Spinner.vue'
 
 import type { Room } from '@/dtos/RoomDto'
 
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useQuery } from '@tanstack/vue-query'
 
 const route = useRoute()
 const roomId = computed(() => route.params.id)
 
-const {
-    data: room,
-    isError,
-    isPending,
-} = useQuery<Room>({
+// TODO: Display error
+const { data, isError, isPending } = useQuery<Room>({
     queryKey: ['rooms', roomId],
     queryFn: (): Promise<Room> => fetch(`/api/rooms/${roomId.value}`).then((r) => r.json()),
 })
 
+watch(data, (newData) => {
+    if (newData) room.value = newData
+})
+
+const room = ref<Room | null>(null)
+
 const roomStatus = computed(
     () => room.value?.status ?? (isPending ? 'loading' : isError ? 'error' : null),
-) // TODO: Display error
-
+)
 const statusClass = computed(
     () =>
         ({
@@ -65,6 +71,10 @@ const statusClass = computed(
             over: 'red',
         })[roomStatus.value ?? 'nothing'],
 )
+
+function onConnect() {
+    console.log('connected!')
+}
 </script>
 
 <style scoped>

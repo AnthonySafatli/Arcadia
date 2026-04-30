@@ -7,7 +7,7 @@
             <button class="btn btn-primary" @click="join">Join Lobby</button>
         </template>
 
-        <!-- Joined / waiting -->
+        <!-- Joined / Waiting -->
         <template v-else>
             <LoadingAnimation />
             <p class="waiting-title">Waiting for players</p>
@@ -44,7 +44,7 @@ import ShareCode from './ShareCode.vue'
 
 import type { Room } from '@/dtos/RoomDto'
 
-const props = defineProps<{ room: Room }>()
+const props = defineProps<{ room: Room; onConnect: () => void }>()
 
 const joined = ref(false)
 
@@ -62,13 +62,8 @@ function initials(name: string) {
 }
 
 function join() {
-    connectToLobby()
+    props.onConnect()
     joined.value = true
-}
-
-// Placeholder — replace with your WebSocket logic
-function connectToLobby() {
-    console.log('TODO: connect via WebSocket')
 }
 </script>
 
