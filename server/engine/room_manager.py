@@ -26,6 +26,7 @@ class Room:
     created_at: float = field(default_factory=time.time)
 
 # In-memory store. Replace with Redis for multi-process deployments.
+# TODO: Replace with not in-memory dict
 _rooms: dict[str, Room] = {}
 # socket_id → player_id (for fast lookup on disconnect)
 _socket_to_player: dict[str, tuple[str, str]] = {}  # socket_id → (room_code, player_id)
