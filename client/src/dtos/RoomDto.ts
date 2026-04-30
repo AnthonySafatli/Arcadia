@@ -1,9 +1,9 @@
 import type { Player } from './PlayerDto'
 
 export interface NewRoom {
-    game_slug: string;
-    player_id: string;
-    nickname: string;
+    game_slug: string
+    player_id: string
+    nickname: string
 }
 
 export interface Room {
@@ -14,5 +14,5 @@ export interface Room {
     host_player_id: string
     players: Player[]
     min_players: number
-    max_player: number
+    max_players: number
 }

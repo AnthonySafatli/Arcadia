@@ -16,7 +16,7 @@
             <Spinner v-if="roomStatus === 'loading'" />
 
             <!-- Waiting state -->
-            <WaitingLobby v-else-if="roomStatus === 'waiting'" :room-id="roomId" />
+            <WaitingLobby v-else-if="roomStatus === 'waiting'" :room="room!" />
 
             <!-- Game canvas placeholder -->
             <div v-else class="game-canvas">
