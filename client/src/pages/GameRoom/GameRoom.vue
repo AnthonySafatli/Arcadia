@@ -16,7 +16,7 @@
             <Spinner v-if="roomStatus === 'loading'" />
 
             <!-- Waiting state -->
-            <WaitingScreen v-else-if="roomStatus === 'waiting'" :room-id="roomId" />
+            <WaitingLobby v-else-if="roomStatus === 'waiting'" :room-id="roomId" />
 
             <!-- Game canvas placeholder -->
             <div v-else class="game-canvas">
@@ -28,13 +28,13 @@
 </template>
 
 <script setup lang="ts">
-import StatusBadge from './WaitingScreen/StatusBadge.vue'
-import WaitingScreen from './WaitingScreen/WaitingScreen.vue'
+import StatusBadge from './StatusBadge.vue'
+import WaitingLobby from './WaitingLobby/WaitingLobby.vue'
 import Spinner from '@/components/Spinner.vue'
 
 import type { Room } from '@/dtos/RoomDto'
 
-import { ref, computed, watch, type ComputedRef } from 'vue'
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useQuery } from '@tanstack/vue-query'
 
@@ -50,9 +50,9 @@ const {
     queryFn: (): Promise<Room> => fetch(`/api/rooms/${roomId.value}`).then((r) => r.json()),
 })
 
-const roomStatus: ComputedRef<string | null> = computed(() =>
-    (room.value?.status ?? isPending) ? 'loading' : isError ? 'error' : null,
-)
+const roomStatus = computed(
+    () => room.value?.status ?? (isPending ? 'loading' : isError ? 'error' : null),
+) // TODO: Display error
 
 const statusClass = computed(
     () =>
