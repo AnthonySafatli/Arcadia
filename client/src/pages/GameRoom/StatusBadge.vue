@@ -1,56 +1,56 @@
 <template>
-    <div class="room-status">
-        <span class="status-dot" :class="status" />
-        <span class="status-text">{{ label }}</span>
-    </div>
+	<div class="room-status">
+		<span class="status-dot" :class="status" />
+		<span class="status-text">{{ label }}</span>
+	</div>
 </template>
 
 <script setup>
-defineProps({ status: String, label: String })
+defineProps({ status: String, label: String });
 </script>
 
 <style scoped>
 .room-status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
 }
 
 .status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
 }
 
 .status-dot.green {
-    background: var(--green-bright);
-    box-shadow: 0 0 6px var(--green-bright);
-    animation: pulse-dot 2s infinite;
+	background: var(--green-bright);
+	box-shadow: 0 0 6px var(--green-bright);
+	animation: pulse-dot 2s infinite;
 }
 .status-dot.yellow {
-    background: #f5c518;
-    box-shadow: 0 0 6px #f5c518;
-    animation: pulse-dot 2s infinite;
+	background: #f5c518;
+	box-shadow: 0 0 6px #f5c518;
+	animation: pulse-dot 2s infinite;
 }
 .status-dot.red {
-    background: #ff4444;
+	background: #ff4444;
 }
 
 @keyframes pulse-dot {
-    0%,
-    100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.4;
-    }
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.4;
+	}
 }
 
 .status-text {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-secondary);
+	font-family: var(--font-mono);
+	font-size: 0.75rem;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--text-secondary);
 }
 </style>
