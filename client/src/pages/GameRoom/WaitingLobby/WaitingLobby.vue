@@ -5,15 +5,13 @@
 		<p class="waiting-sub">{{ players.length }} / {{ room.max_players }} joined</p>
 
 		<div class="player-grid">
-			<div
+			<PlayerPill
 				v-for="player in players"
 				:key="player.player_id"
-				class="player-pill"
-				:class="{ host: player.player_id === room.host_player_id }">
-				<span class="player-avatar">{{ initials(player.nickname) }}</span>
-				<span class="player-name">{{ player.nickname }}</span>
-				<span v-if="player.player_id === room.host_player_id" class="host-badge">host</span>
-			</div>
+				:player="player"
+				:player-id="playerId"
+				:host-player-id="room.host_player_id"
+				@changeNickname="$emit('changeNickname')" />
 		</div>
 
 		<div class="lobby-footer">
@@ -26,25 +24,20 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
+import { usePlayerId } from "@/composables/usePlayerId";
+
+import PlayerPill from "./PlayerPill.vue";
 import LoadingAnimation from "./LoadingAnimation.vue";
 import ShareCode from "./ShareCode.vue";
 
 import type { Room } from "@/dtos/RoomDto";
 
 const props = defineProps<{ room: Room }>();
+defineEmits<{ changeNickname: [] }>();
 
 const players = computed(() => props.room?.players ?? []);
 
-function initials(name: string) {
-	return (
-		name
-			?.split(" ")
-			.map((w) => w[0])
-			.join("")
-			.toUpperCase()
-			.slice(0, 2) ?? "?"
-	);
-}
+const playerId = usePlayerId();
 </script>
 
 <style scoped>
@@ -78,52 +71,6 @@ function initials(name: string) {
 	justify-content: center;
 	max-width: 480px;
 	margin-top: 8px;
-}
-
-.player-pill {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	background: var(--bg-card);
-	border: 1px solid var(--bg-border);
-	border-radius: 999px;
-	padding: 6px 14px 6px 6px;
-	transition: border-color var(--transition);
-}
-
-.player-pill.host {
-	border-color: var(--green-dim);
-}
-
-.player-avatar {
-	width: 28px;
-	height: 28px;
-	border-radius: 50%;
-	background: var(--green-dim);
-	color: var(--green-bright);
-	font-family: var(--font-mono);
-	font-size: 0.7rem;
-	font-weight: 500;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-shrink: 0;
-}
-
-.player-name {
-	font-family: var(--font-mono);
-	font-size: 0.8rem;
-	color: var(--text-primary);
-	letter-spacing: 0.05em;
-}
-
-.host-badge {
-	font-family: var(--font-mono);
-	font-size: 0.6rem;
-	letter-spacing: 0.12em;
-	text-transform: uppercase;
-	color: var(--green-bright);
-	opacity: 0.7;
 }
 
 .lobby-footer {

@@ -34,16 +34,24 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref, watch } from "vue";
+import { useRoute } from "vue-router";
+import { useQuery } from "@tanstack/vue-query";
+
+import { useSocket } from "@/composables/useSocket";
+import { usePlayerId } from "@/composables/usePlayerId";
+import { useNickname } from "@/composables/useNickname";
+
+import type { Room } from "@/dtos/RoomDto";
+
 import StatusBadge from "./StatusBadge.vue";
 import PreJoinScreen from "./PreJoinScreen.vue";
 import WaitingLobby from "./WaitingLobby/WaitingLobby.vue";
 import Spinner from "@/components/Spinner.vue";
 
-import type { Room } from "@/dtos/RoomDto";
-
-import { computed, ref, watch } from "vue";
-import { useRoute } from "vue-router";
-import { useQuery } from "@tanstack/vue-query";
+const { socket, connect, joinRoom } = useSocket();
+const playerId = usePlayerId();
+const nickname = useNickname();
 
 const route = useRoute();
 const roomId = computed(() => route.params.id);
@@ -55,7 +63,10 @@ const { data, isError, isPending } = useQuery<Room>({
 });
 
 watch(data, (newData) => {
-	if (newData) room.value = newData;
+	if (newData) {
+		room.value = newData;
+		if (room.value.host_player_id == playerId) onConnect();
+	}
 });
 
 const room = ref<Room | null>(null);
@@ -77,8 +88,27 @@ const statusClass = computed(
 );
 
 function onConnect() {
-	console.log("connected!");
-	connected.value = true;
+	connect();
+
+	socket.on("joined", (data) => {
+		connected.value = true;
+		room.value = data.room;
+	});
+
+	socket.on("player_joined", (data) => {
+		room.value = data.room;
+	});
+
+	socket.on("game_start", (data) => {
+		room.value = data.room;
+		// set game state here
+	});
+
+	socket.on("error", (data) => {
+		console.error(data.message);
+	});
+
+	joinRoom(roomId.value as string, playerId, nickname);
 }
 </script>
 
