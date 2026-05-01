@@ -15,12 +15,15 @@
             <!-- Loading -->
             <Spinner v-if="roomStatus === 'loading'" />
 
-            <!-- Waiting state -->
-            <WaitingLobby
-                v-else-if="roomStatus === 'waiting'"
+            <!-- Yet To Join -->
+            <PreJoinScreen
+                v-else-if="!connected && roomStatus === 'waiting'"
                 :room="room!"
-                :on-connect="onConnect"
+                @join="onConnect"
             />
+
+            <!-- Waiting state -->
+            <WaitingLobby v-else-if="roomStatus === 'waiting'" :room="room!" />
 
             <!-- Game canvas placeholder -->
             <div v-else class="game-canvas">
@@ -33,6 +36,7 @@
 
 <script setup lang="ts">
 import StatusBadge from './StatusBadge.vue'
+import PreJoinScreen from './PreJoinScreen.vue'
 import WaitingLobby from './WaitingLobby/WaitingLobby.vue'
 import Spinner from '@/components/Spinner.vue'
 
@@ -56,6 +60,7 @@ watch(data, (newData) => {
 })
 
 const room = ref<Room | null>(null)
+const connected = ref(false)
 
 const roomStatus = computed(
     () => room.value?.status ?? (isPending ? 'loading' : isError ? 'error' : null),
@@ -74,6 +79,7 @@ const statusClass = computed(
 
 function onConnect() {
     console.log('connected!')
+    connected.value = true
 }
 </script>
 

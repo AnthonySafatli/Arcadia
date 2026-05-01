@@ -1,52 +1,38 @@
 <template>
     <div class="waiting-screen">
-        <!-- Pre-join -->
-        <template v-if="!joined">
-            <p class="waiting-title">Ready to play?</p>
-            <p class="waiting-sub">{{ room.game_name }}</p>
-            <button class="btn btn-primary" @click="join">Join Lobby</button>
-        </template>
+        <LoadingAnimation />
+        <p class="waiting-title">Waiting for players</p>
+        <p class="waiting-sub">{{ players.length }} / {{ room.max_players }} joined</p>
 
-        <!-- Joined / Waiting -->
-        <template v-else>
-            <LoadingAnimation />
-            <p class="waiting-title">Waiting for players</p>
-            <p class="waiting-sub">{{ players.length }} / {{ room.max_players }} joined</p>
-
-            <div class="player-grid">
-                <div
-                    v-for="player in players"
-                    :key="player.player_id"
-                    class="player-pill"
-                    :class="{ host: player.player_id === room.host_player_id }"
-                >
-                    <span class="player-avatar">{{ initials(player.nickname) }}</span>
-                    <span class="player-name">{{ player.nickname }}</span>
-                    <span v-if="player.player_id === room.host_player_id" class="host-badge"
-                        >host</span
-                    >
-                </div>
+        <div class="player-grid">
+            <div
+                v-for="player in players"
+                :key="player.player_id"
+                class="player-pill"
+                :class="{ host: player.player_id === room.host_player_id }"
+            >
+                <span class="player-avatar">{{ initials(player.nickname) }}</span>
+                <span class="player-name">{{ player.nickname }}</span>
+                <span v-if="player.player_id === room.host_player_id" class="host-badge">host</span>
             </div>
+        </div>
 
-            <div class="lobby-footer">
-                <p class="waiting-sub">Share your room code</p>
-                <ShareCode :code="room.code" />
-            </div>
-        </template>
+        <div class="lobby-footer">
+            <p class="waiting-sub">Share your room code</p>
+            <ShareCode :code="room.code" />
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 
 import LoadingAnimation from './LoadingAnimation.vue'
 import ShareCode from './ShareCode.vue'
 
 import type { Room } from '@/dtos/RoomDto'
 
-const props = defineProps<{ room: Room; onConnect: () => void }>()
-
-const joined = ref(false)
+const props = defineProps<{ room: Room }>()
 
 const players = computed(() => props.room?.players ?? [])
 
@@ -59,11 +45,6 @@ function initials(name: string) {
             .toUpperCase()
             .slice(0, 2) ?? '?'
     )
-}
-
-function join() {
-    props.onConnect()
-    joined.value = true
 }
 </script>
 
@@ -90,6 +71,7 @@ function join() {
     text-transform: uppercase;
     color: var(--text-muted);
 }
+
 .player-grid {
     display: flex;
     flex-wrap: wrap;
