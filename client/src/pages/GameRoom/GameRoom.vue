@@ -22,7 +22,10 @@
 				@join="onConnect" />
 
 			<!-- Waiting state -->
-			<WaitingLobby v-else-if="roomStatus === 'waiting'" :room="room!" />
+			<WaitingLobby
+				v-else-if="roomStatus === 'waiting'"
+				:room="room!"
+				@changeNickname="showNicknameModal = true" />
 
 			<!-- Game canvas placeholder -->
 			<div v-else class="game-canvas">
@@ -31,6 +34,7 @@
 			</div>
 		</main>
 	</div>
+	<NicknameModal v-model="showNicknameModal" />
 </template>
 
 <script setup lang="ts">
@@ -48,10 +52,13 @@ import StatusBadge from "./StatusBadge.vue";
 import PreJoinScreen from "./PreJoinScreen.vue";
 import WaitingLobby from "./WaitingLobby/WaitingLobby.vue";
 import Spinner from "@/components/Spinner.vue";
+import NicknameModal from "@/components/NicknameModal.vue";
 
 const { socket, connect, joinRoom } = useSocket();
 const playerId = usePlayerId();
 const nickname = useNickname();
+
+const showNicknameModal = ref(false);
 
 const route = useRoute();
 const roomId = computed(() => route.params.id);
@@ -108,7 +115,7 @@ function onConnect() {
 		console.error(data.message);
 	});
 
-	joinRoom(roomId.value as string, playerId, nickname);
+	joinRoom(roomId.value as string, playerId, nickname.value);
 }
 </script>
 

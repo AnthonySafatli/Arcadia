@@ -67,7 +67,7 @@ function launch() {
 	const newRoom: NewRoom = {
 		game_slug: selected.value,
 		player_id: playerId,
-		nickname: nickname,
+		nickname: nickname.value,
 	};
 	mutate(newRoom, {
 		onSuccess: (room) => {

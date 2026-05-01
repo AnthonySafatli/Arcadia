@@ -1,14 +1,4 @@
-export function useNickname() {
-	let nickname = localStorage.getItem("nickname");
-	if (!nickname) {
-		return generateNickname();
-	}
-	return nickname;
-}
-
-export function useSetNickname(nickname: string) {
-	localStorage.setItem("nickname", nickname);
-}
+import { ref } from "vue";
 
 const ADJECTIVES = [
 	// gamer
@@ -136,4 +126,15 @@ export function generateNickname(): string {
 	const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)] ?? "";
 	const num = String(Math.floor(Math.random() * 900) + 100);
 	return adj + noun + num;
+}
+
+const nickname = ref(localStorage.getItem("nickname") ?? generateNickname());
+
+export function useNickname() {
+	return nickname;
+}
+
+export function useSetNickname(newNickname: string) {
+	nickname.value = newNickname;
+	localStorage.setItem("nickname", newNickname);
 }
