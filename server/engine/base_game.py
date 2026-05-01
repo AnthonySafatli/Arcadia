@@ -36,12 +36,9 @@ class BaseGame(ABC):
     def is_over(self) -> str | None:
         """Return winning player_id, 'draw', or None if game is still going."""
 
+    @abstractmethod
     def get_state(self, player_id: str) -> dict:
-        """
-        Override to return a player-specific view (fog of war, hidden cards, etc.).
-        Default: return the full shared state.
-        """
-        return self.on_start.__func__  # subclasses should store state and return it
+        """Return current state of the game"""
 
     @property
     def player_ids(self) -> list[str]:

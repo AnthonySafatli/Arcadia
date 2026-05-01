@@ -4,6 +4,9 @@ import time
 from dataclasses import dataclass, field
 from engine.base_game import BaseGame
 
+# TODO: No room cleanup, remove stale rooms
+# TODO: Host reassignment logic for when host leaves
+
 # How long (seconds) a disconnected player has to reconnect before being removed
 RECONNECT_GRACE_PERIOD = 60
 
