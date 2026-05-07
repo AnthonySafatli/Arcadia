@@ -1,43 +1,45 @@
 <template>
-	<div class="game-room">
-		<header class="room-header">
-			<router-link to="/" class="wordmark">arcadia</router-link>
+	<div>
+		<div class="game-room">
+			<header class="room-header">
+				<router-link to="/" class="wordmark">arcadia</router-link>
 
-			<div class="room-info">
-				<span class="room-label">room</span>
-				<span class="room-code">{{ roomId }}</span>
-			</div>
+				<div class="room-info">
+					<span class="room-label">room</span>
+					<span class="room-code">{{ roomId }}</span>
+				</div>
 
-			<StatusBadge :label="roomStatus" />
-		</header>
+				<StatusBadge :label="roomStatus" />
+			</header>
 
-		<main class="room-body">
-			<!-- Loading -->
-			<Spinner v-if="roomStatus === 'loading'" />
+			<main class="room-body">
+				<!-- Loading -->
+				<Spinner v-if="roomStatus === 'loading'" />
 
-			<!-- Join Error -->
-			<JoinError v-else-if="isError" :error="error?.message ?? ''" />
+				<!-- Join Error -->
+				<JoinError v-else-if="isError" :error="error?.message ?? ''" />
 
-			<!-- Yet To Join -->
-			<PreJoinScreen
-				v-else-if="!connected && roomStatus === 'waiting'"
-				:room="room!"
-				@join="onConnect" />
+				<!-- Yet To Join -->
+				<PreJoinScreen
+					v-else-if="!connected && roomStatus === 'waiting'"
+					:room="room!"
+					@join="onConnect" />
 
-			<!-- Waiting state -->
-			<WaitingLobby
-				v-else-if="roomStatus === 'waiting'"
-				:room="room!"
-				@changeNickname="showNicknameModal = true" />
+				<!-- Waiting state -->
+				<WaitingLobby
+					v-else-if="roomStatus === 'waiting'"
+					:room="room!"
+					@changeNickname="showNicknameModal = true" />
 
-			<!-- Game canvas placeholder -->
-			<div v-else class="game-canvas">
-				<p class="placeholder-text">Game component renders here</p>
-				<!-- <component :is="gameComponent" :state="state" /> -->
-			</div>
-		</main>
+				<!-- Game canvas placeholder -->
+				<div v-else class="game-canvas">
+					<p class="placeholder-text">Game component renders here</p>
+					<!-- <component :is="gameComponent" :state="state" /> -->
+				</div>
+			</main>
+		</div>
+		<NicknameModal v-model="showNicknameModal" :onNicknameChanged="onNicknameChange" />
 	</div>
-	<NicknameModal v-model="showNicknameModal" :onNicknameChanged="onNicknameChange" />
 </template>
 
 <script setup lang="ts">

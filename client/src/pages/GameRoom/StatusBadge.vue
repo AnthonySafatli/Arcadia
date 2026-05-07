@@ -6,7 +6,9 @@
 </template>
 
 <script setup>
-defineProps({ label: String });
+import { computed } from "vue";
+
+const props = defineProps({ label: String });
 
 const statusClass = computed(
 	() =>
@@ -17,7 +19,7 @@ const statusClass = computed(
 			waiting: "yellow",
 			playing: "green",
 			over: "red",
-		})[label ?? "nothing"]
+		})[props.label ?? "nothing"]
 );
 </script>
 
@@ -46,7 +48,7 @@ const statusClass = computed(
 }
 .status-dot.red {
 	background: #ff4444;
-	box-shadow: 0 0 6px #f5c518;
+	box-shadow: 0 0 6px #ff4444;
 	animation: pulse-dot 2s infinite;
 }
 

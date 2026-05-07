@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { ref, onUnmounted } from "vue";
 import { toast } from "vue3-toastify";
 import { useSocket } from "@/composables/useSocket";
 import type { Room } from "@/dtos/RoomDto";
@@ -41,6 +41,19 @@ export function useGameRoom() {
 	socket.on("game_start", (data) => onGameStart.value(data));
 	socket.on("game_over", (data) => onGameOver.value(data));
 	socket.on("game_state", (data) => onGameState.value(data));
+
+	onUnmounted(() => {
+		socket.off("joined");
+		socket.off("player_joined");
+		socket.off("player_reconnected");
+		socket.off("player_disconnected");
+		socket.off("player_renamed");
+		socket.off("error");
+		socket.off("game_start");
+		socket.off("game_over");
+		socket.off("game_state");
+		socket.disconnect();
+	});
 
 	return { room, connected, onGameStart, onGameOver, onGameState };
 }
