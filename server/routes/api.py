@@ -33,5 +33,5 @@ def api_create_room():
 def api_get_room(code):
     room = room_manager.get_room(code)
     if not room:
-        return jsonify({"error": "Room not found."}), 404
+        return jsonify({"error": "Room not found"}), 404
     return jsonify(room_manager.room_to_dict(room))

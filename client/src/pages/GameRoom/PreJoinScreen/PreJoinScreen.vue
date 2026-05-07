@@ -1,7 +1,7 @@
 <template>
 	<div class="waiting-screen">
-		<p class="waiting-title">Ready to play?</p>
-		<p class="waiting-sub">{{ room.game_name }}</p>
+		<p class="waiting-title">{{ room.game_name }}</p>
+		<p class="waiting-sub">Ready to play?</p>
 		<button class="btn btn-primary" @click="$emit('join')">Join Lobby</button>
 	</div>
 </template>

@@ -15,13 +15,14 @@
 			<!-- Loading -->
 			<Spinner v-if="roomStatus === 'loading'" />
 
+			<!-- Join Error -->
+			<JoinError v-else-if="isError" :error="error?.message ?? ''" />
+
 			<!-- Yet To Join -->
 			<PreJoinScreen
 				v-else-if="!connected && roomStatus === 'waiting'"
 				:room="room!"
 				@join="onConnect" />
-
-			<!-- TODO: Error on room code (Room not found screen) -->
 
 			<!-- Waiting state -->
 			<WaitingLobby
@@ -52,7 +53,8 @@ import { useNickname } from "@/composables/useNickname";
 import type { Room } from "@/dtos/RoomDto";
 
 import StatusBadge from "./StatusBadge.vue";
-import PreJoinScreen from "./PreJoinScreen.vue";
+import JoinError from "./JoinError/JoinError.vue";
+import PreJoinScreen from "./PreJoinScreen/PreJoinScreen.vue";
 import WaitingLobby from "./WaitingLobby/WaitingLobby.vue";
 import Spinner from "@/components/Spinner.vue";
 import NicknameModal from "@/components/NicknameModal.vue";
@@ -89,10 +91,16 @@ socket.on("error", (data) => {
 	});
 });
 
-// TODO: Display error
-const { data, isError, isPending } = useQuery<Room>({
+const { data, isError, error, isPending } = useQuery<Room>({
 	queryKey: ["rooms", roomId],
-	queryFn: (): Promise<Room> => fetch(`/api/rooms/${roomId.value}`).then((r) => r.json()),
+	queryFn: async (): Promise<Room> => {
+		const r = await fetch(`/api/rooms/${roomId.value}`);
+		if (!r.ok) {
+			const body = await r.json();
+			throw new Error(body.message ?? body.error ?? `${r.status}`);
+		}
+		return r.json();
+	},
 });
 
 watch(data, (newData) => {
@@ -106,7 +114,7 @@ const room = ref<Room | null>(null);
 const connected = ref(false);
 
 const roomStatus = computed(
-	() => room.value?.status ?? (isPending ? "loading" : isError ? "error" : null)
+	() => room.value?.status ?? (isPending.value ? "loading" : isError.value ? "error" : null)
 );
 const statusClass = computed(
 	() =>

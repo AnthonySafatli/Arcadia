@@ -34,6 +34,8 @@ defineProps({ status: String, label: String });
 }
 .status-dot.red {
 	background: #ff4444;
+	box-shadow: 0 0 6px #f5c518;
+	animation: pulse-dot 2s infinite;
 }
 
 @keyframes pulse-dot {
