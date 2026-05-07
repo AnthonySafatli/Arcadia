@@ -29,7 +29,8 @@
 				<WaitingLobby
 					v-else-if="roomStatus === 'waiting'"
 					:room="room!"
-					@changeNickname="showNicknameModal = true" />
+					@changeNickname="showNicknameModal = true"
+					@onStartGame="startGameEvent" />
 
 				<!-- Game canvas placeholder -->
 				<div v-else class="game-canvas">
@@ -67,7 +68,7 @@ const roomId = computed(() => route.params.id);
 const playerId = usePlayerId();
 const nickname = useNickname();
 
-const { connect, joinRoom, changeNickname, sendAction } = useSocket();
+const { connect, joinRoom, changeNickname, startGame, sendAction } = useSocket();
 const { room, connected, onGameStart, onGameState, onGameOver } = useGameRoom();
 
 const showNicknameModal = ref(false);
@@ -102,6 +103,10 @@ function onConnect() {
 
 function onNicknameChange(nickname: string) {
 	changeNickname(room.value?.code!, playerId, nickname);
+}
+
+function startGameEvent() {
+	startGame(room.value?.code!, playerId);
 }
 </script>
 

@@ -99,8 +99,6 @@ def change_nickname(room_code: str, player_id: str, nickname: str) -> Player:
     print(list(room.players.keys()))
     if player_id not in room.players:
         raise ValueError("Player not in room.")
-    if room.status != "waiting":
-        raise ValueError("Cannot change nickname after game has started.")
     if not nickname or len(nickname) > 20:
         raise ValueError("Nickname must be 1-20 characters.")
     room.players[player_id].nickname = nickname

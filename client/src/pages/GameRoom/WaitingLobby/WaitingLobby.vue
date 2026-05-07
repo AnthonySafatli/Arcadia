@@ -20,6 +20,15 @@
 			<p class="waiting-sub">Share your room code</p>
 			<ShareCode :code="room.code" />
 		</div>
+
+		<Transition name="start-btn">
+			<button
+				v-if="isHost && canStart"
+				class="btn btn-primary start-button"
+				@click="$emit('onStartGame')">
+				Start Game
+			</button>
+		</Transition>
 	</div>
 </template>
 
@@ -35,11 +44,15 @@ import ShareCode from "./ShareCode.vue";
 import type { Room } from "@/dtos/RoomDto";
 
 const props = defineProps<{ room: Room }>();
-defineEmits<{ changeNickname: [] }>();
+defineEmits<{ changeNickname: []; onStartGame: [] }>();
 
 const players = computed(() => props.room?.players ?? []);
-
 const playerId = usePlayerId();
+
+const isHost = computed(() => playerId === props.room.host_player_id);
+const canStart = computed(
+	() => players.value.filter((x) => x.connected).length >= props.room.min_players
+);
 </script>
 
 <style scoped>
@@ -81,5 +94,28 @@ const playerId = usePlayerId();
 	align-items: center;
 	gap: 8px;
 	margin-top: 8px;
+}
+
+.start-button {
+	margin-top: 8px;
+}
+
+.start-btn-enter-active {
+	transition:
+		opacity 0.5s ease,
+		transform 0.5s ease,
+		filter 0.5s ease;
+}
+.start-btn-leave-active {
+	transition:
+		opacity 0.2s ease,
+		transform 0.2s ease,
+		filter 0.2s ease;
+}
+.start-btn-enter-from,
+.start-btn-leave-to {
+	opacity: 0;
+	transform: translateY(6px) scale(0.97);
+	filter: blur(6px);
 }
 </style>

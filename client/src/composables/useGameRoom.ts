@@ -2,6 +2,7 @@ import { ref, onUnmounted } from "vue";
 import { toast } from "vue3-toastify";
 import { useSocket } from "@/composables/useSocket";
 import type { Room } from "@/dtos/RoomDto";
+import type { GameStartEvent, GameOverEvent, GameStateEvent } from "@/dtos/SocketEventDto";
 
 export function useGameRoom() {
 	const { socket } = useSocket();
@@ -35,9 +36,9 @@ export function useGameRoom() {
 	});
 
 	// Game-specific handlers — override/extend these per game
-	const onGameStart = ref<(data: any) => void>(() => {});
-	const onGameOver = ref<(data: any) => void>(() => {});
-	const onGameState = ref<(data: any) => void>(() => {});
+	const onGameStart = ref<(data: GameStartEvent) => void>(() => {});
+	const onGameOver = ref<(data: GameOverEvent) => void>(() => {});
+	const onGameState = ref<(data: GameStateEvent) => void>(() => {});
 
 	socket.on("game_start", (data) => onGameStart.value(data));
 	socket.on("game_over", (data) => onGameOver.value(data));

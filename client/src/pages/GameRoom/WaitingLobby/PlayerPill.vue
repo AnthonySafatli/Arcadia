@@ -102,4 +102,20 @@ function changeNickname() {
 	color: var(--green-bright);
 	opacity: 0.7;
 }
+
+:host,
+.player-pill {
+	animation: pill-enter 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes pill-enter {
+	from {
+		opacity: 0;
+		transform: scale(0.6) translateY(6px);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1) translateY(0);
+	}
+}
 </style>
