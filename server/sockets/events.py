@@ -16,7 +16,7 @@ def register_socket_events(socketio_instance):
         if not result:
             return
         room, player = result
-        # Notify others in the room
+        
         emit(
             "player_disconnected",
             {

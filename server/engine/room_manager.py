@@ -1,17 +1,17 @@
 import random
 import string
 import time
+import threading
 from dataclasses import dataclass, field
 from engine.base_game import BaseGame
 
 # TODO: No room cleanup, remove stale rooms
-# TODO: Host reassignment logic for when host leaves
 
 @dataclass
 class Player:
-    player_id: str                  # Persistent token stored in browser (localStorage)
+    player_id: str                  
     nickname: str
-    socket_id: str | None = None    # Current socket connection (changes on reconnect)
+    socket_id: str | None = None    
     connected: bool = False
     disconnected_at: float | None = None
 
@@ -160,3 +160,33 @@ def room_to_dict(room: Room) -> dict:
         "min_players": game_cls.MIN_PLAYERS if game_cls else 2,
         "max_players": game_cls.MAX_PLAYERS if game_cls else 2,
     }
+
+DISCONNECT_TIMEOUT = 30  # seconds
+
+def _cleanup_loop():
+    while True:
+        time.sleep(10)
+        now = time.time()
+        for room in list(_rooms.values()):
+            if room.status != "waiting":
+                continue
+            for player_id, player in list(room.players.items()):
+                if not player.connected and player.disconnected_at and \
+                        now - player.disconnected_at > DISCONNECT_TIMEOUT:
+                    del room.players[player_id]
+            
+            if len(room.players) == 0:
+                del _rooms[room.code]
+                continue
+
+            # Reassign host if needed
+            if room.host_player_id not in room.players:
+                next_host = next(
+                    (p for p in room.players.values() if p.connected), None
+                )
+                if next_host:
+                    room.host_player_id = next_host.player_id
+
+# Start background thread
+_cleanup_thread = threading.Thread(target=_cleanup_loop, daemon=True)
+_cleanup_thread.start()
