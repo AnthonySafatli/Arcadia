@@ -100,6 +100,22 @@ def register_socket_events(socketio_instance):
             to=room_code,
         )
 
+    @socketio_instance.on("change_nickname")
+    def on_change_nickname(data):
+        room_code = (data.get("room_code") or "").strip().upper()
+        player_id = (data.get("player_id") or "").strip()
+        nickname = (data.get("nickname") or "").strip()
+
+        try:
+            player = room_manager.change_nickname(room_code, player_id, nickname)
+        except ValueError as e:
+            emit("error", {"message": str(e)})
+            return
+
+        emit("player_renamed", {
+            "player_id": player.player_id,
+            "nickname": player.nickname,
+        }, to=room_code)
 
     @socketio_instance.on("action")
     def on_action(data):

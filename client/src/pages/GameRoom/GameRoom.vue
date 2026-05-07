@@ -37,7 +37,7 @@
 			</div>
 		</main>
 	</div>
-	<NicknameModal v-model="showNicknameModal" />
+	<NicknameModal v-model="showNicknameModal" :onNicknameChanged="onNicknameChange" />
 </template>
 
 <script setup lang="ts">
@@ -59,7 +59,7 @@ import WaitingLobby from "./WaitingLobby/WaitingLobby.vue";
 import Spinner from "@/components/Spinner.vue";
 import NicknameModal from "@/components/NicknameModal.vue";
 
-const { socket, connect, joinRoom } = useSocket();
+const { socket, connect, joinRoom, changeNickname } = useSocket();
 const playerId = usePlayerId();
 const nickname = useNickname();
 
@@ -73,7 +73,17 @@ socket.on("joined", (data) => {
 	room.value = data.room;
 });
 
+socket.on("game_start", (data) => {});
+
+socket.on("game_over", (data) => {});
+
+socket.on("game_state", (data) => {});
+
 socket.on("player_joined", (data) => {
+	room.value = data.room;
+});
+
+socket.on("player_reconnected", (data) => {
 	room.value = data.room;
 });
 
@@ -81,9 +91,13 @@ socket.on("player_disconnected", (data) => {
 	room.value = data.room;
 });
 
-socket.on("game_start", (data) => {
-	room.value = data.room;
-	// set game state here
+socket.on("player_renamed", (data) => {
+	console.log("here");
+	console.log(data);
+	const player = room.value?.players.find((x) => x.player_id == data.player_id);
+	if (player) {
+		player.nickname = data.nickname;
+	}
 });
 
 socket.on("error", (data) => {
@@ -135,6 +149,10 @@ const statusClass = computed(
 function onConnect() {
 	connect();
 	joinRoom(roomId.value as string, playerId, nickname.value);
+}
+
+function onNicknameChange(nickname: string) {
+	changeNickname(room.value?.code!, playerId, nickname);
 }
 </script>
 

@@ -30,7 +30,7 @@ import { ref, watch, nextTick } from "vue";
 import Modal from "./Modal.vue";
 import { useNickname, useSetNickname } from "@/composables/useNickname";
 
-const props = defineProps<{ modelValue: boolean }>();
+const props = defineProps<{ modelValue: boolean; onNicknameChanged: (nickname: string) => void }>();
 const emit = defineEmits<{ "update:modelValue": [value: boolean] }>();
 
 const nickname = useNickname();
@@ -56,6 +56,7 @@ function confirm() {
 	if (!trimmed) return;
 	useSetNickname(trimmed);
 	show.value = false;
+	props.onNicknameChanged(trimmed);
 }
 </script>
 

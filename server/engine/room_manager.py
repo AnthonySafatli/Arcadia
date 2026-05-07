@@ -5,8 +5,6 @@ import threading
 from dataclasses import dataclass, field
 from engine.base_game import BaseGame
 
-# TODO: No room cleanup, remove stale rooms
-
 @dataclass
 class Player:
     player_id: str                  
@@ -113,6 +111,21 @@ def player_disconnect(socket_id: str) -> tuple[Room, Player] | None:
             room.host_player_id = next_host.player_id
 
     return room, player
+
+def change_nickname(room_code: str, player_id: str, nickname: str) -> Player:
+    room = get_room(room_code)
+    if not room:
+        raise ValueError("Room not found.")
+    print(player_id)
+    print(list(room.players.keys()))
+    if player_id not in room.players:
+        raise ValueError("Player not in room.")
+    if room.status != "waiting":
+        raise ValueError("Cannot change nickname after game has started.")
+    if not nickname or len(nickname) > 20:
+        raise ValueError("Nickname must be 1-20 characters.")
+    room.players[player_id].nickname = nickname
+    return room.players[player_id]
 
 def register_socket(socket_id: str, room_code: str, player_id: str):
     _socket_to_player[socket_id] = (room_code, player_id)

@@ -2,7 +2,9 @@
 	<div class="waiting-screen">
 		<LoadingAnimation />
 		<p class="waiting-title">Waiting for players</p>
-		<p class="waiting-sub">{{ players.length }} / {{ room.max_players }} joined</p>
+		<p class="waiting-sub">
+			{{ players.filter((x) => x.connected).length }} / {{ room.max_players }} joined
+		</p>
 
 		<div class="player-grid">
 			<PlayerPill

@@ -16,12 +16,14 @@ export interface ServerToClientEvents {
 	player_joined: (data: PlayerEvent) => void;
 	player_reconnected: (data: PlayerEvent) => void;
 	player_disconnected: (data: PlayerEvent) => void;
+	player_renamed: (data: PlayerEvent) => void;
 	error: (data: ErrorEvent) => void;
 }
 
 export interface ClientToServerEvents {
 	join_room: (data: { room_code: string; player_id: string; nickname: string }) => void;
 	start_game: (data: { room_code: string; player_id: string }) => void;
+	change_nickname: (data: { room_code: string; player_id: string; nickname: string }) => void;
 	action: (data: { room_code: string; player_id: string; action: unknown }) => void;
 }
 
@@ -43,9 +45,17 @@ export function useSocket() {
 		socket.emit("start_game", { room_code: roomCode, player_id: playerId });
 	};
 
+	const changeNickname = (roomCode: string, playerId: string, nickname: string) => {
+		socket.emit("change_nickname", {
+			room_code: roomCode,
+			player_id: playerId,
+			nickname: nickname,
+		});
+	};
+
 	const sendAction = (roomCode: string, playerId: string, action: unknown) => {
 		socket.emit("action", { room_code: roomCode, player_id: playerId, action });
 	};
 
-	return { socket, connect, disconnect, joinRoom, startGame, sendAction };
+	return { socket, connect, disconnect, joinRoom, startGame, changeNickname, sendAction };
 }
