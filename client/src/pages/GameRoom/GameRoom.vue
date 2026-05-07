@@ -8,7 +8,7 @@
 				<span class="room-code">{{ roomId }}</span>
 			</div>
 
-			<StatusBadge :status="statusClass" :label="roomStatus" />
+			<StatusBadge :label="roomStatus" />
 		</header>
 
 		<main class="room-body">
@@ -44,9 +44,9 @@
 import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useQuery } from "@tanstack/vue-query";
-import { toast } from "vue3-toastify";
 
 import { useSocket } from "@/composables/useSocket";
+import { useGameRoom } from "@/composables/useGameRoom";
 import { usePlayerId } from "@/composables/usePlayerId";
 import { useNickname } from "@/composables/useNickname";
 
@@ -59,55 +59,16 @@ import WaitingLobby from "./WaitingLobby/WaitingLobby.vue";
 import Spinner from "@/components/Spinner.vue";
 import NicknameModal from "@/components/NicknameModal.vue";
 
-const { socket, connect, joinRoom, changeNickname } = useSocket();
-const playerId = usePlayerId();
-const nickname = useNickname();
-
-const showNicknameModal = ref(false);
-
 const route = useRoute();
 const roomId = computed(() => route.params.id);
 
-socket.on("joined", (data) => {
-	connected.value = true;
-	room.value = data.room;
-});
+const playerId = usePlayerId();
+const nickname = useNickname();
 
-socket.on("game_start", (data) => {});
+const { connect, joinRoom, changeNickname, sendAction } = useSocket();
+const { room, connected, onGameStart, onGameState, onGameOver } = useGameRoom();
 
-socket.on("game_over", (data) => {});
-
-socket.on("game_state", (data) => {});
-
-socket.on("player_joined", (data) => {
-	room.value = data.room;
-});
-
-socket.on("player_reconnected", (data) => {
-	room.value = data.room;
-});
-
-socket.on("player_disconnected", (data) => {
-	room.value = data.room;
-});
-
-socket.on("player_renamed", (data) => {
-	console.log("here");
-	console.log(data);
-	const player = room.value?.players.find((x) => x.player_id == data.player_id);
-	if (player) {
-		player.nickname = data.nickname;
-	}
-});
-
-socket.on("error", (data) => {
-	console.error(data.message);
-	toast(data.message, {
-		theme: "dark",
-		type: "error",
-		position: "bottom-center",
-	});
-});
+const showNicknameModal = ref(false);
 
 const { data, isError, error, isPending } = useQuery<Room>({
 	queryKey: ["rooms", roomId],
@@ -128,22 +89,8 @@ watch(data, (newData) => {
 	}
 });
 
-const room = ref<Room | null>(null);
-const connected = ref(false);
-
 const roomStatus = computed(
 	() => room.value?.status ?? (isPending.value ? "loading" : isError.value ? "error" : null)
-);
-const statusClass = computed(
-	() =>
-		({
-			nothing: "",
-			error: "red",
-			loading: "yellow",
-			waiting: "yellow",
-			playing: "green",
-			over: "red",
-		})[roomStatus.value ?? "nothing"]
 );
 
 function onConnect() {

@@ -1,12 +1,24 @@
 <template>
 	<div class="room-status">
-		<span class="status-dot" :class="status" />
+		<span class="status-dot" :class="statusClass" />
 		<span class="status-text">{{ label }}</span>
 	</div>
 </template>
 
 <script setup>
-defineProps({ status: String, label: String });
+defineProps({ label: String });
+
+const statusClass = computed(
+	() =>
+		({
+			nothing: "",
+			error: "red",
+			loading: "yellow",
+			waiting: "yellow",
+			playing: "green",
+			over: "red",
+		})[label ?? "nothing"]
+);
 </script>
 
 <style scoped>
