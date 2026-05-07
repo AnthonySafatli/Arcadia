@@ -68,8 +68,8 @@ const roomId = computed(() => route.params.id);
 const playerId = usePlayerId();
 const nickname = useNickname();
 
-const { connect, joinRoom, changeNickname, startGame, sendAction } = useSocket();
-const { room, connected, onGameStart, onGameState, onGameOver } = useGameRoom();
+const { connect, joinRoom, changeNickname, startGame } = useSocket();
+const { room, connected } = useGameRoom();
 
 const showNicknameModal = ref(false);
 

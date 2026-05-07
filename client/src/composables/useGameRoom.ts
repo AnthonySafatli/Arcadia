@@ -10,7 +10,6 @@ export function useGameRoom() {
 	const connected = ref(false);
 
 	socket.on("joined", (data) => {
-		console.log("here");
 		connected.value = true;
 		room.value = data.room;
 	});
@@ -35,13 +34,17 @@ export function useGameRoom() {
 		toast(data.message, { theme: "dark", type: "error", position: "bottom-center" });
 	});
 
-	// Game-specific handlers — override/extend these per game
-	const onGameStart = ref<(data: GameStartEvent) => void>(() => {});
-	const onGameOver = ref<(data: GameOverEvent) => void>(() => {});
+	socket.on("game_start", (data) => {
+		room.value = data.room;
+	});
+
+	socket.on("game_over", (data) => {
+		room.value = data.room;
+	});
+
+	// Game-specific handler — override/extend this per game
 	const onGameState = ref<(data: GameStateEvent) => void>(() => {});
 
-	socket.on("game_start", (data) => onGameStart.value(data));
-	socket.on("game_over", (data) => onGameOver.value(data));
 	socket.on("game_state", (data) => onGameState.value(data));
 
 	onUnmounted(() => {
@@ -57,5 +60,5 @@ export function useGameRoom() {
 		socket.disconnect();
 	});
 
-	return { room, connected, onGameStart, onGameOver, onGameState };
+	return { room, connected, onGameState };
 }

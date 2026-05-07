@@ -42,6 +42,9 @@ class TicTacToe(BaseGame):
 
     def is_over(self) -> str | None:
         return self.winner
+    
+    def get_state(self, player_id):
+        return self._state()
 
     def _check_winner(self) -> str | None:
         wins = [(0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6)]
