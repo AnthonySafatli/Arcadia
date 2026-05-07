@@ -10,6 +10,7 @@ import GameRoom from "./pages/GameRoom/GameRoom.vue";
 import Stats from "./pages/Stats/Stats.vue";
 import NotFound from "./pages/NotFound/NotFound.vue";
 
+import "vue3-toastify/dist/index.css";
 import "./assets/global.css";
 
 const router = createRouter({

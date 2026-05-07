@@ -21,6 +21,8 @@
 				:room="room!"
 				@join="onConnect" />
 
+			<!-- TODO: Error on room code (Room not found screen) -->
+
 			<!-- Waiting state -->
 			<WaitingLobby
 				v-else-if="roomStatus === 'waiting'"
@@ -41,6 +43,7 @@
 import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useQuery } from "@tanstack/vue-query";
+import { toast } from "vue3-toastify";
 
 import { useSocket } from "@/composables/useSocket";
 import { usePlayerId } from "@/composables/usePlayerId";
@@ -62,6 +65,29 @@ const showNicknameModal = ref(false);
 
 const route = useRoute();
 const roomId = computed(() => route.params.id);
+
+socket.on("joined", (data) => {
+	connected.value = true;
+	room.value = data.room;
+});
+
+socket.on("player_joined", (data) => {
+	room.value = data.room;
+});
+
+socket.on("game_start", (data) => {
+	room.value = data.room;
+	// set game state here
+});
+
+socket.on("error", (data) => {
+	console.error(data.message);
+	toast(data.message, {
+		theme: "dark",
+		type: "error",
+		position: "bottom-center",
+	});
+});
 
 // TODO: Display error
 const { data, isError, isPending } = useQuery<Room>({
@@ -96,25 +122,6 @@ const statusClass = computed(
 
 function onConnect() {
 	connect();
-
-	socket.on("joined", (data) => {
-		connected.value = true;
-		room.value = data.room;
-	});
-
-	socket.on("player_joined", (data) => {
-		room.value = data.room;
-	});
-
-	socket.on("game_start", (data) => {
-		room.value = data.room;
-		// set game state here
-	});
-
-	socket.on("error", (data) => {
-		console.error(data.message);
-	});
-
 	joinRoom(roomId.value as string, playerId, nickname.value);
 }
 </script>
