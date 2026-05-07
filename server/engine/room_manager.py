@@ -74,6 +74,8 @@ def join_room(code: str, player_id: str, nickname: str, socket_id: str) -> tuple
 
     if is_reconnect:
         player = room.players[player_id]
+        if player.socket_id and player.socket_id in _socket_to_player:
+            del _socket_to_player[player.socket_id]
         player.socket_id = socket_id
         player.connected = True
         player.disconnected_at = None
@@ -89,7 +91,6 @@ def join_room(code: str, player_id: str, nickname: str, socket_id: str) -> tuple
     return room, player, is_reconnect
 
 def player_disconnect(socket_id: str) -> tuple[Room, Player] | None:
-    """Called when a socket disconnects. Marks player as disconnected."""
     entry = _socket_to_player.pop(socket_id, None)
     if not entry:
         return None
@@ -97,9 +98,20 @@ def player_disconnect(socket_id: str) -> tuple[Room, Player] | None:
     room = _rooms.get(room_code)
     if not room or player_id not in room.players:
         return None
+    
     player = room.players[player_id]
     player.connected = False
     player.disconnected_at = time.time()
+
+    # Reassign host if needed
+    if room.host_player_id == player_id and room.status == "waiting":
+        next_host = next(
+            (p for p in room.players.values() if p.player_id != player_id and p.connected),
+            None
+        )
+        if next_host:
+            room.host_player_id = next_host.player_id
+
     return room, player
 
 def register_socket(socket_id: str, room_code: str, player_id: str):

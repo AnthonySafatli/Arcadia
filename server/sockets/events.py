@@ -59,7 +59,7 @@ def register_socket_events(socketio_instance):
 
         # If reconnecting mid-game, send current game state to them specifically
         if is_reconnect and room.status == "playing" and room.game:
-            emit("game_state", room.game.get_state(player_id))
+            emit("game_state", {"state": room.game.get_state(player_id)})
 
         # Notify everyone else
         emit(
