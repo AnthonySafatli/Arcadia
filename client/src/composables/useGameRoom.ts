@@ -7,6 +7,7 @@ import type { GameStartEvent, GameOverEvent, GameStateEvent } from "@/dtos/Socke
 export function useGameRoom() {
 	const { socket } = useSocket();
 	const room = ref<Room | null>(null);
+	const state = ref<unknown | null>(null);
 	const connected = ref(false);
 
 	socket.on("joined", (data) => {
@@ -36,16 +37,16 @@ export function useGameRoom() {
 
 	socket.on("game_start", (data) => {
 		room.value = data.room;
+		state.value = data.state;
 	});
 
 	socket.on("game_over", (data) => {
 		room.value = data.room;
 	});
 
-	// Game-specific handler — override/extend this per game
-	const onGameState = ref<(data: GameStateEvent) => void>(() => {});
-
-	socket.on("game_state", (data) => onGameState.value(data));
+	socket.on("game_state", (data) => {
+		state.value = data.state;
+	});
 
 	onUnmounted(() => {
 		socket.off("joined");
@@ -60,5 +61,5 @@ export function useGameRoom() {
 		socket.disconnect();
 	});
 
-	return { room, connected, onGameState };
+	return { room, state, connected };
 }

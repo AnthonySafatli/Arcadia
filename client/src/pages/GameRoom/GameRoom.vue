@@ -32,11 +32,8 @@
 					@changeNickname="showNicknameModal = true"
 					@onStartGame="startGameEvent" />
 
-				<!-- Game canvas placeholder -->
-				<div v-else class="game-canvas">
-					<p class="placeholder-text">Game component renders here</p>
-					<!-- <component :is="gameComponent" :state="state" /> -->
-				</div>
+				<!-- Game Canvas -->
+				<GameCanvas v-else />
 			</main>
 		</div>
 		<NicknameModal v-model="showNicknameModal" :onNicknameChanged="onNicknameChange" />
@@ -55,6 +52,7 @@ import { useNickname } from "@/composables/useNickname";
 
 import type { Room } from "@/dtos/RoomDto";
 
+import GameCanvas from "./GameCanvas.vue";
 import StatusBadge from "./StatusBadge.vue";
 import JoinError from "./JoinError/JoinError.vue";
 import PreJoinScreen from "./PreJoinScreen/PreJoinScreen.vue";
@@ -169,20 +167,6 @@ function startGameEvent() {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-}
-
-.game-canvas {
-	width: 100%;
-	height: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.placeholder-text {
-	font-family: var(--font-mono);
-	color: var(--text-muted);
-	font-size: 0.85rem;
 }
 
 @keyframes fadeUp {

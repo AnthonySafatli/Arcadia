@@ -3,21 +3,11 @@ from typing import Any
 
 
 class BaseGame(ABC):
-    """
-    All games extend this. The engine calls these methods — games never touch sockets.
-    """
-
-    #: Minimum players required to start
-    MIN_PLAYERS: int = 2
-    #: Maximum players allowed
-    MAX_PLAYERS: int = 2
-    #: Human-readable name shown in lobby
-    NAME: str = "Unnamed Game"
+    MIN_PLAYERS: int = 1
+    MAX_PLAYERS: int = 1
+    NAME: str = "The Game"
 
     def __init__(self, room_code: str, players: list[dict]):
-        """
-        players: list of {"player_id": str, "nickname": str}
-        """
         self.room_code = room_code
         self.players = players  # ordered list
 
