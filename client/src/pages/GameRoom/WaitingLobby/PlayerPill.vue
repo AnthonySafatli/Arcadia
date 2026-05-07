@@ -32,7 +32,7 @@ function initials(name: string) {
 }
 
 function changeNickname() {
-	if (!isMe) return;
+	if (!isMe.value) return;
 	emit("changeNickname");
 }
 </script>
