@@ -9,6 +9,7 @@ export function useGameRoom() {
 	const connected = ref(false);
 
 	socket.on("joined", (data) => {
+		console.log("here");
 		connected.value = true;
 		room.value = data.room;
 	});

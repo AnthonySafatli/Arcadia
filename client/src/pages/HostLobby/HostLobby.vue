@@ -54,7 +54,12 @@ const selectOptions = computed<SelectItem[]>(
 			id: x.slug,
 			name: x.name,
 			icon: "⊞",
-			tags: [`${x.min_players}-${x.max_players} Players`, "x.type"],
+			tags: [
+				x.min_players === x.max_players
+					? `${x.min_players} Players`
+					: `${x.min_players}-${x.max_players} Players`,
+				"x.type",
+			],
 		})) ?? []
 );
 

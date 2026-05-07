@@ -1,27 +1,9 @@
-import random
-import string
 import time
 import threading
-from dataclasses import dataclass, field
-from engine.base_game import BaseGame
 
-@dataclass
-class Player:
-    player_id: str                  
-    nickname: str
-    socket_id: str | None = None    
-    connected: bool = False
-    disconnected_at: float | None = None
-
-@dataclass
-class Room:
-    code: str
-    game_slug: str
-    host_player_id: str
-    status: str = "waiting"   # waiting | playing | finished
-    players: dict[str, Player] = field(default_factory=dict)  # player_id → Player
-    game: BaseGame | None = None
-    created_at: float = field(default_factory=time.time)
+from engine.game_registry import get_game_class
+from models.room import Room
+from models.player import Player
 
 # In-memory store. Replace with Redis for multi-process deployments.
 # TODO: Replace with not in-memory dict
@@ -31,15 +13,8 @@ _socket_to_player: dict[str, tuple[str, str]] = {}  # socket_id → (room_code, 
 
 # Room lifecycle
 
-def generate_code() -> str:
-    chars = string.ascii_uppercase + string.digits
-    while True:
-        code = "".join(random.choices(chars, k=6))
-        if code not in _rooms:
-            return code
-
 def create_room(game_slug: str, host_player_id: str, host_nickname: str) -> Room:
-    code = generate_code()
+    code = Room.generate_code(_rooms)
     room = Room(code=code, game_slug=game_slug, host_player_id=host_player_id)
     host = Player(player_id=host_player_id, nickname=host_nickname)
     room.players[host_player_id] = host
@@ -65,7 +40,6 @@ def join_room(code: str, player_id: str, nickname: str, socket_id: str) -> tuple
     if room.status == "finished":
         raise ValueError("Game has already ended.")
 
-    from engine.game_registry import get_game_class
     game_cls = get_game_class(room.game_slug)
 
     is_reconnect = player_id in room.players
@@ -80,10 +54,15 @@ def join_room(code: str, player_id: str, nickname: str, socket_id: str) -> tuple
     else:
         if room.status == "playing":
             raise ValueError("Game already in progress.")
-        if game_cls and len(room.players) >= game_cls.MAX_PLAYERS:
+        if game_cls and sum(1 for p in room.players.values() if p.connected) >= game_cls.MAX_PLAYERS:
             raise ValueError("Room is full.")
         player = Player(player_id=player_id, nickname=nickname, socket_id=socket_id, connected=True)
         room.players[player_id] = player
+        if len(room.players) > game_cls.MAX_PLAYERS:
+            disconnected = [p for p in room.players.values() if not p.connected]
+            if disconnected:
+                longest_disconnected = min(disconnected, key=lambda x: x.disconnected_at)
+                del room.players[longest_disconnected.player_id]
 
     _socket_to_player[socket_id] = (room.code, player_id)
     return room, player, is_reconnect
