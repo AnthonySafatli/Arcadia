@@ -1,3 +1,6 @@
+import eventlet
+eventlet.monkey_patch()
+
 import os
 from flask import Flask, send_from_directory
 from flask_socketio import SocketIO
@@ -5,7 +8,7 @@ from flask_socketio import SocketIO
 from routes.api import api_bp
 from sockets.events import register_socket_events
 
-import games  # noqa — triggers all @register decorators
+import games
 
 # App setup
 
@@ -17,8 +20,8 @@ app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-change-me")
 
 socketio = SocketIO(
     app,
-    cors_allowed_origins="*",   # tighten in production
-    async_mode="gevent",
+    cors_allowed_origins="*",   # TODO: tighten in production
+    async_mode="eventlet",
 )
 
 app.register_blueprint(api_bp, url_prefix="/api")

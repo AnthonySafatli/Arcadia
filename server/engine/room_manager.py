@@ -7,9 +7,6 @@ from engine.base_game import BaseGame
 # TODO: No room cleanup, remove stale rooms
 # TODO: Host reassignment logic for when host leaves
 
-# How long (seconds) a disconnected player has to reconnect before being removed
-RECONNECT_GRACE_PERIOD = 60
-
 @dataclass
 class Player:
     player_id: str                  # Persistent token stored in browser (localStorage)
@@ -104,7 +101,6 @@ def player_disconnect(socket_id: str) -> tuple[Room, Player] | None:
     player.connected = False
     player.disconnected_at = time.time()
     return room, player
-
 
 def register_socket(socket_id: str, room_code: str, player_id: str):
     _socket_to_player[socket_id] = (room_code, player_id)

@@ -6,7 +6,7 @@
 
 		<div class="player-grid">
 			<PlayerPill
-				v-for="player in players"
+				v-for="player in players.filter((x) => x.connected)"
 				:key="player.player_id"
 				:player="player"
 				:player-id="playerId"

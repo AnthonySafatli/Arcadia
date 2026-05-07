@@ -77,6 +77,10 @@ socket.on("player_joined", (data) => {
 	room.value = data.room;
 });
 
+socket.on("player_disconnected", (data) => {
+	room.value = data.room;
+});
+
 socket.on("game_start", (data) => {
 	room.value = data.room;
 	// set game state here
