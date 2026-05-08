@@ -1,15 +1,15 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-
 class BaseGame(ABC):
     MIN_PLAYERS: int = 1
     MAX_PLAYERS: int = 1
     NAME: str = "The Game"
 
-    def __init__(self, room_code: str, players: list[dict]):
+    def __init__(self, room_code: str, players: list[dict], host_id: str):
         self.room_code = room_code
         self.players = players  # ordered list
+        self.host_id = host_id
 
     @abstractmethod
     def on_start(self) -> dict:

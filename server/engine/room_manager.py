@@ -124,7 +124,7 @@ def start_game(room: Room) -> dict:
         {"player_id": p.player_id, "nickname": p.nickname}
         for p in room.players.values()
     ]
-    room.game = game_cls(room.code, players_list)
+    room.game = game_cls(room.code, players_list, room.host_player_id)
     room.status = "playing"
     return room.game.on_start()
 

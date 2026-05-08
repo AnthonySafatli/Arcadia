@@ -144,9 +144,7 @@ def register_socket_events(socketio_instance):
             return
 
         winner = room.game.is_over()
-        if winner:
-            room.status = "finished"
-
+        
         # Broadcast new state to everyone in the room
         socketio_instance.emit("game_state", {"state": new_state}, to=room_code)
 
