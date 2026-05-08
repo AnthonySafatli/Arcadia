@@ -36,29 +36,114 @@ class TheMind(BaseGame):
     def on_action(self, player_id: str, action: dict) -> dict:
         """
         Action format:
-            { "type": "hover" }
+            { "type": "hover", "state": bool }
                 — hover over their card
             { "type": "place" }
                 — place their smallest card
-            { "type": "throwing_star" }  
-                — toggles votes to place throwing star
-            { "type": "focus" }
-                — toggles votes to restart focus
+            { "type": "throwing_star", "state": bool }  
+                — sets vote to place throwing star
+            { "type": "focus", "state": bool }
+                — sets vote to restart focus
+            { "type": "reset" }              
+                — restart the game
         """
+        action_type = action.get("type")
+        if action_type == "hover":
+            return self._handle_hover(player_id, action)
+        elif action_type == "place":
+            return self._handle_place(player_id)
+        elif action_type == "throwing_star":
+            return self._handle_throwing_star(player_id, action)
+        elif action_type == "focus":
+            return self._handle_focus(player_id, action)
+        elif action_type == "reset":
+            return self._handle_reset(player_id)
+        else:
+            raise ValueError(f"Unknown action type: {action_type!r}")
 
-    def _handle_hover(self, player_id: str) -> dict:
-        pass
+    def _handle_hover(self, player_id: str, action: dict) -> dict:
+        state = bool(action.get("state"))
+        if state is None or state is not bool:
+            raise ValueError("Invalid action.")
+        
+        self.is_hovering[player_id] = state
+        return self._state()
+
 
     def _handle_place(self, player_id: str) -> dict:
-        pass
+        if len(self.player_hands[player_id]) == 0:
+            raise ValueError("You have no cards in your hand.")
 
-    def _handle_throwing_star(self, player_id: str) -> dict:
-        pass
+        self.placed.sort()
 
-    def _handle_focus(self, player_id: str) -> dict:
-        pass
+        lowest_card = min(self.player_hands[player_id])
+        self.player_hands[player_id].remove(lowest_card)
+
+        self.placed.append(lowest_card)
+
+        all_hands = [
+            card
+            for hand in self.player_hands.values()
+            for card in hand
+        ]
+
+        discarded_cards = [
+            card for card in all_hands
+            if card < lowest_card
+        ]
+
+        if discarded_cards:
+            self.lives -= 1
+            self.discarded.extend(discarded_cards)
+            self.player_hands = {
+                p: [
+                    card for card in hand
+                    if card > lowest_card
+                ]
+                for p, hand in self.player_hands.items()
+            }
+
+        return self._state()
+    
+    def _handle_throwing_star(self, player_id: str, action: dict) -> dict:
+        state = bool(action.get("state"))
+        if state is None or state is not bool:
+            raise ValueError("Invalid action.")
+        
+        self.wants_throwing_star[player_id] = state
+        if all(ts == True for ts in self.wants_throwing_star.values()):
+            for player in self.players:
+                self._handle_place(player["player_id"])
+
+        return self._state()
+
+    def _handle_focus(self, player_id: str, action: dict) -> dict:
+        state = bool(action.get("state"))
+        if state is None or state is not bool:
+            raise ValueError("Invalid action.")
+        
+        self.wants_focus[player_id] = state
+        if all(f == True for f in self.wants_focus.values()):
+            self.wants_focus = {p: False for p in self.wants_focus}
+        
+        return self._state()
+
+    def _handle_reset(self, player_id: str):
+        if player_id != self.host_id:
+            raise ValueError("Only the host can reset the game.")
+        if self.is_over():
+            raise ValueError("Game is not over yet.")
+        
+        self._set_initial_state()
+        return self._state()
 
     def is_over(self) -> str | None:
+        max_level = self.MAX_LEVEL[len(self.players)]
+        if max_level == self.level:
+            if all(len(hand) == 0 for hand in self.player_hands.values()):
+                return "win"
+        if self.lives == 0:
+            return "loss"
         return None
     
     def get_state(self, player_id):
@@ -71,14 +156,27 @@ class TheMind(BaseGame):
 
     def _set_initial_state(self):
         self.deck = [i+1 for i in range(100)]
+        self.placed = []
+        self.discarded = []
         self.level = 1
         self.lives = len(self.players)
         self.throwing_stars = 1
 
-        self.player_decks = {player["player_id"]: self._pick_card_from_deck() for player in self.players}
+        self.player_hands = {player["player_id"]: [self._pick_card_from_deck()] for player in self.players}
         self.is_hovering = {player["player_id"]: False for player in self.players}
         self.wants_throwing_star = {player["player_id"]: False for player in self.players}
         self.wants_focus = {player["player_id"]: False for player in self.players}
 
     def _state(self, player_id: str) -> dict:
-        pass
+        return {
+            "hand": self.player_hands[player_id],
+            "placed": self.placed,
+            "discarded": self.discarded,
+            "level": self.level,
+            "lives": self.lives,
+            "throwing_stars": self.throwing_stars,
+            "player_hands": {k: len(v) for k, v in self.player_hands.items()},
+            "player_hovering": self.is_hovering,
+            "player_throwing_stars": self.wants_throwing_star,
+            "player_focus": self.wants_focus
+        }
