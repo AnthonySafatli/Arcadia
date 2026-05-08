@@ -6,9 +6,19 @@
 
 		<div class="ttt">
 			<div class="ttt-header">
-				<div class="score-block">
-					<span class="score-label">you</span>
-					<span class="score-value">{{ state.scores[playerId] }}</span>
+				<div
+					class="score-block"
+					:class="[
+						{
+							'score-block--active': state.current_turn === playerId && !state.winner,
+						},
+						markForClass(playerId),
+					]">
+					<span class="score-you">you</span>
+					<div class="score-main">
+						<span class="score-mark">{{ markFor(playerId) }}</span>
+						<span class="score-value">{{ state.scores[playerId] }}</span>
+					</div>
 				</div>
 
 				<div class="ttt-title-block">
@@ -16,9 +26,19 @@
 					<span class="ttt-status" :class="statusClass">{{ statusText }}</span>
 				</div>
 
-				<div class="score-block">
-					<span class="score-label">cpu</span>
-					<span class="score-value">{{ state.scores[opponent?.player_id ?? ""] }}</span>
+				<div
+					class="score-block"
+					:class="[
+						{ 'score-block--active': isOpponentTurn && !state.winner },
+						markForClass(opponent?.player_id!),
+					]">
+					<span class="score-you">&nbsp;</span>
+					<div class="score-main">
+						<span class="score-value">{{
+							state.scores[opponent?.player_id ?? ""]
+						}}</span>
+						<span class="score-mark">{{ markFor(opponent?.player_id!) }}</span>
+					</div>
 				</div>
 			</div>
 
@@ -47,7 +67,10 @@
 			</div>
 
 			<div class="ttt-footer">
-				<button class="ttt-reset" @click="resetGame">
+				<button
+					class="ttt-reset"
+					v-if="room?.host_player_id === playerId"
+					@click="resetGame">
 					<svg
 						width="14"
 						height="14"
@@ -84,10 +107,6 @@ const { room, state: socketState } = useGameRoom();
 const state = computed(() => socketState.value as TicTacToeState);
 const opponent = computed(() => room.value?.players.find((x) => x.player_id != playerId));
 
-watch(state, (newState) => {
-	console.log(newState);
-});
-
 const youWin = computed(() => state.value.winner === playerId);
 const opponentWin = computed(() => state.value.winner === opponent.value?.player_id);
 const isDraw = computed(() => state.value.winner === "draw");
@@ -110,6 +129,10 @@ const statusClass = computed(() => ({
 
 function markFor(cell: string | null) {
 	return cell ? state.value.marks[cell] : null;
+}
+
+function markForClass(cell: string | null) {
+	return markFor(cell)?.toLowerCase();
 }
 
 function playerMove(i: number) {
@@ -165,34 +188,6 @@ function resetGame() {
 	align-items: center;
 	justify-content: space-between;
 	width: 100%;
-}
-
-.score-block {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 4px;
-	background: var(--bg-card);
-	border: 1px solid var(--bg-border);
-	border-radius: var(--radius-md);
-	padding: 12px 24px;
-	min-width: 72px;
-}
-
-.score-label {
-	font-family: var(--font-mono);
-	font-size: 0.65rem;
-	letter-spacing: 0.15em;
-	text-transform: uppercase;
-	color: var(--text-muted);
-}
-
-.score-value {
-	font-family: var(--font-display);
-	font-size: 2rem;
-	line-height: 1;
-	color: var(--green-bright);
-	text-shadow: 0 0 12px rgba(57, 255, 138, 0.35);
 }
 
 .ttt-title-block {
@@ -351,5 +346,86 @@ function resetGame() {
 .ttt-reset:hover {
 	border-color: var(--green-dim);
 	color: var(--green-bright);
+}
+
+.score-main {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.score-mark {
+	font-family: var(--font-display);
+	font-size: 1.4rem;
+	line-height: 1;
+	opacity: 0.4;
+	transition: opacity 200ms ease;
+}
+
+.x .score-mark {
+	color: var(--green-bright);
+}
+
+.o .score-mark {
+	color: #ff6b6b;
+}
+
+.score-block--active .score-mark {
+	opacity: 1;
+}
+
+.x.score-block.score-block--active {
+	border-color: var(--green-dim);
+	box-shadow: 0 0 12px rgba(57, 255, 138, 0.2);
+}
+
+.o.score-block.score-block--active {
+	border-color: rgba(255, 107, 107, 0.5);
+	box-shadow: 0 0 12px rgba(255, 107, 107, 0.2);
+}
+
+.score-block {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	background: var(--bg-card);
+	border: 1px solid var(--bg-border);
+	border-radius: var(--radius-md);
+	padding: 12px 24px;
+	min-width: 72px;
+	transition:
+		border-color 200ms ease,
+		box-shadow 200ms ease;
+}
+
+.score-value {
+	font-family: var(--font-display);
+	font-size: 2rem;
+	line-height: 1;
+	color: var(--text-secondary);
+	text-shadow: 0 0 12px rgba(57, 255, 138, 0.35);
+}
+
+.score-you {
+	font-family: var(--font-mono);
+	font-size: 0.55rem;
+	letter-spacing: 0.3em;
+	text-transform: uppercase;
+	padding: 2px 8px;
+	opacity: 0.7;
+	transition: opacity 200ms ease;
+}
+
+.x .score-you {
+	color: var(--green-bright);
+}
+
+.o .score-you {
+	color: #ff6b6b;
+}
+
+.score-block--active .score-you {
+	opacity: 1;
 }
 </style>
