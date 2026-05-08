@@ -103,28 +103,32 @@
 				<!-- Other players -->
 				<div class="players-ring">
 					<div
-						v-for="[id, count] in otherPlayers"
-						:key="id"
+						v-for="player in otherPlayers"
+						:key="player.player_id"
 						class="player-node"
 						:class="{
-							'player-node--hovering': state.player_hovering[id],
+							'player-node--hovering': state.player_hovering[player.player_id],
 						}">
 						<div class="player-avatar">
-							<span class="player-initial">{{ id.charAt(0).toUpperCase() }}</span>
-							<div v-if="state.player_hovering[id]" class="player-hover-ring" />
+							<span class="player-initial">{{ player.nickname }}</span>
+							<div
+								v-if="state.player_hovering[player.player_id]"
+								class="player-hover-ring" />
 						</div>
 						<div class="player-cards-count">
 							<div class="player-card-pips">
 								<span
-									v-for="c in Math.min(count, 8)"
+									v-for="c in Math.min(getPlayerHandCount(player.player_id), 8)"
 									:key="c"
 									class="player-card-pip" />
-								<span v-if="count > 8" class="player-card-overflow"
-									>+{{ count - 8 }}</span
+								<span
+									v-if="getPlayerHandCount(player.player_id) > 8"
+									class="player-card-overflow"
+									>+{{ getPlayerHandCount(player.player_id) - 8 }}</span
 								>
 							</div>
 						</div>
-						<span class="player-name">{{ id }}</span>
+						<span class="player-name">{{ player.player_id }}</span>
 					</div>
 				</div>
 			</div>
@@ -157,30 +161,28 @@
 		</div>
 	</div>
 </template>
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from "vue";
 
-// Temporary local state instead of props
-const state = {
-	hand: [3, 17, 42, 68, 91],
-	placed: [1, 5, 8, 12, 20, 25, 33],
-	discarded: [15, 37],
-	level: 3,
-	lives: 3,
-	throwing_stars: 1,
-	player_hands: { alice: 3, bob: 2, carol: 4 },
-	player_hovering: { alice: true, bob: false, carol: false },
-	player_throwing_star: { alice: false, bob: false, carol: false },
-	player_focus: { alice: false, bob: false, carol: false },
-};
+import type { TheMindState } from "./TheMindState";
 
-const hoveredCard = ref(null);
+import { usePlayerId } from "@/composables/usePlayerId";
+import { useGameRoom } from "@/composables/useGameRoom";
+import { useSocket } from "@/composables/useSocket";
 
-const sortedHand = computed(() => [...state.hand].sort((a, b) => a - b));
+const playerId = usePlayerId();
+
+const { sendAction } = useSocket();
+const { room, state: socketState } = useGameRoom();
+const state = computed(() => socketState.value as TheMindState);
+
+const hoveredCard = ref<null | number>(null);
+
+const sortedHand = computed(() => [...state.value.hand].sort((a, b) => a - b));
 
 const allCards = computed(() => {
-	const placed = state.placed.map((v) => ({ value: v, type: "placed" }));
-	const discarded = state.discarded.map((v) => ({ value: v, type: "discarded" }));
+	const placed = state.value.placed.map((v) => ({ value: v, type: "placed" }));
+	const discarded = state.value.discarded.map((v) => ({ value: v, type: "discarded" }));
 	return [...placed, ...discarded].sort((a, b) => a.value - b.value);
 });
 
@@ -190,12 +192,35 @@ const visiblePileCards = computed(() => {
 });
 
 const topCard = computed(() => visiblePileCards.value[0] ?? null);
+const otherPlayers = computed(() => room.value?.players.filter((x) => x.player_id !== playerId));
 
-const otherPlayers = computed(() => Object.entries(state.player_hands));
+function getPlayerHandCount(id: string) {
+	return state.value.player_hands[id] ?? 0;
+}
 
-function cardRotation(idx) {
+function cardRotation(idx: number) {
 	const rotations = [0, -2, 2, -3, 3];
 	return `${rotations[idx] ?? (Math.random() > 0.5 ? 2 : -2)}deg`;
+}
+
+function hover(state: boolean) {
+	sendAction(room.value?.code!, playerId, { type: "hover", state: state });
+}
+
+function place() {
+	sendAction(room.value?.code!, playerId, { type: "place" });
+}
+
+function throwingStar(state: boolean) {
+	sendAction(room.value?.code!, playerId, { type: "throwing_star", state: state });
+}
+
+function focus(state: boolean) {
+	sendAction(room.value?.code!, playerId, { type: "focus", state: state });
+}
+
+function reset() {
+	sendAction(room.value?.code!, playerId, { type: "reset" });
 }
 </script>
 
