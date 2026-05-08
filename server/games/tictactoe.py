@@ -24,9 +24,9 @@ class TicTacToe(BaseGame):
     def on_action(self, player_id: str, action: dict) -> dict:
         """
         Action format:
-            {"type": "cell", "cell": int}  
+            { "type": "cell", "cell": int }  
                 — place a mark (0-8)
-            {"type": "reset"}              
+            { "type": "reset" }              
                 — reset board (host only, game must be over)
         """
         action_type = action.get("type")
