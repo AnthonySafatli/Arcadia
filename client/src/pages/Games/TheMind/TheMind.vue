@@ -16,7 +16,12 @@
 				:player-hovering="state.player_hovering"
 				:players="room?.players ?? []" />
 
-			<YourHand :hand="state.hand" />
+			<YourHand
+				:hand="state.hand"
+				:next-level-btn="showNextLevelBtn"
+				@place="place"
+				@hover="hover"
+				@next-level="nextLevel" />
 		</div>
 	</div>
 </template>
@@ -39,12 +44,22 @@ const { sendAction } = useSocket();
 const { room, state: socketState } = useGameRoom();
 const state = computed(() => socketState.value as TheMindState);
 
+const showNextLevelBtn = computed(
+	() =>
+		room.value?.host_player_id === playerId &&
+		Object.values(state.value.player_hands).every((x) => x === 0)
+);
+
 function hover(state: boolean) {
 	sendAction(room.value?.code!, playerId, { type: "hover", state: state });
 }
 
 function place() {
 	sendAction(room.value?.code!, playerId, { type: "place" });
+}
+
+function nextLevel() {
+	sendAction(room.value?.code!, playerId, { type: "next_level" });
 }
 
 function throwingStar(state: boolean) {

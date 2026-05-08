@@ -59,8 +59,6 @@ const props = defineProps<{
 	throwingStars: number;
 	playerHands: Record<string, number>;
 }>();
-
-const { level, lives, throwingStars, playerHands } = props;
 </script>
 
 <style scoped>

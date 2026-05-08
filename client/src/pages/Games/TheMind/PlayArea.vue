@@ -85,14 +85,12 @@ const props = defineProps<{
 	players: Player[];
 }>();
 
-const { placed, discarded, players, playerHands, playerHovering } = props;
-
 const playerId = usePlayerId();
 
 const allCards = computed(() => {
-	const _placed = placed.map((v) => ({ value: v, type: "placed" }));
-	const _discarded = discarded.map((v) => ({ value: v, type: "discarded" }));
-	return [..._placed, ..._discarded].sort((a, b) => a.value - b.value);
+	const placed = props.placed.map((v) => ({ value: v, type: "placed" }));
+	const discarded = props.discarded.map((v) => ({ value: v, type: "discarded" }));
+	return [...placed, ...discarded].sort((a, b) => a.value - b.value);
 });
 
 const visiblePileCards = computed(() => {
@@ -101,10 +99,10 @@ const visiblePileCards = computed(() => {
 });
 
 const topCard = computed(() => visiblePileCards.value[0] ?? null);
-const otherPlayers = computed(() => players.filter((x) => x.player_id !== playerId));
+const otherPlayers = computed(() => props.players.filter((x) => x.player_id !== playerId));
 
 function getPlayerHandCount(id: string) {
-	return playerHands[id] ?? 0;
+	return props.playerHands[id] ?? 0;
 }
 
 function cardRotation(idx: number) {

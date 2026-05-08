@@ -52,6 +52,8 @@ class TheMind(BaseGame):
             return self._handle_hover(player_id, action)
         elif action_type == "place":
             return self._handle_place(player_id)
+        elif action_type == "next_level":
+            return self._handle_next_level(player_id)
         elif action_type == "throwing_star":
             return self._handle_throwing_star(player_id, action)
         elif action_type == "focus":
@@ -63,7 +65,7 @@ class TheMind(BaseGame):
 
     def _handle_hover(self, player_id: str, action: dict) -> callable[str, dict]:
         state = bool(action.get("state"))
-        if state is None or state is not bool:
+        if state is None or type(state) is not bool:
             raise ValueError("Invalid action.")
         
         self.is_hovering[player_id] = state
@@ -102,7 +104,20 @@ class TheMind(BaseGame):
                 for p, hand in self.player_hands.items()
             }
 
-        # TODO: New level
+        return self._state
+    
+    def _handle_next_level(self, player_id: str):
+        if player_id != self.host_id:
+            raise ValueError("Only the host can move to the next level.")
+        
+        reward = self.REWARDS.get(self.level)
+        if reward == "ts":
+            self.throwing_stars += 1
+        elif reward == "l":
+            self.lives += 1
+
+        self.level += 1
+        self._set_initial_state(full_reset=False, level=self.level)
 
         return self._state
     
@@ -155,18 +170,24 @@ class TheMind(BaseGame):
         self.deck.remove(card)
         return card
 
-    def _set_initial_state(self):
+    def _set_initial_state(self, full_reset=True, level=1):
         self.deck = [i+1 for i in range(100)]
         self.placed = []
         self.discarded = []
-        self.level = 1
-        self.lives = len(self.players)
-        self.throwing_stars = 1
+        self.level = level
 
-        self.player_hands = {player["player_id"]: [self._pick_card_from_deck()] for player in self.players}
-        self.is_hovering = {player["player_id"]: False for player in self.players}
-        self.wants_throwing_star = {player["player_id"]: False for player in self.players}
-        self.wants_focus = {player["player_id"]: False for player in self.players}
+        self.player_hands = {
+            player["player_id"]: [self._pick_card_from_deck() for _ in range(level)]
+            for player in self.players
+        }
+
+        if full_reset:
+            self.lives = len(self.players)
+            self.throwing_stars = 1
+
+            self.is_hovering = {player["player_id"]: False for player in self.players}
+            self.wants_throwing_star = {player["player_id"]: False for player in self.players}
+            self.wants_focus = {player["player_id"]: False for player in self.players}
 
     def _state(self, player_id: str) -> dict:
         return {

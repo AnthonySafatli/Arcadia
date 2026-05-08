@@ -12,29 +12,52 @@
 				:class="{ 'hand-card--lowest': idx === 0 }"
 				:style="{ '--hand-idx': idx }"
 				@mouseenter="hoveredCard = card"
-				@mouseleave="hoveredCard = null">
+				@mouseleave="hoveredCard = null"
+				@click="() => idx === 0 && emit('place')">
 				<div class="hand-card-inner">
 					<span class="hand-card-number">{{ card }}</span>
 				</div>
 				<div v-if="idx === 0" class="hand-card-glow" />
 			</div>
-			<div v-if="hand.length === 0" class="hand-empty">no cards</div>
+			<button v-else-if="nextLevelBtn" class="btn-next-level" @click="$emit('nextLevel')">
+				next level
+			</button>
+			<div v-else-if="hand.length === 0" class="hand-empty">no cards</div>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 
 const props = defineProps<{
 	hand: number[];
+	nextLevelBtn: boolean;
 }>();
 
-const { hand } = props;
+const emit = defineEmits<{
+	(e: "place"): void;
+	(e: "hover", hovering: boolean): void;
+	(e: "nextLevel"): void;
+}>();
 
 const hoveredCard = ref<null | number>(null);
+const isHovering = ref<boolean>(false);
 
-const sortedHand = computed(() => [...hand].sort((a, b) => a - b));
+watch(props.hand, (newHand) => {
+	if (hoveredCard.value == null) return;
+	if (newHand.includes(hoveredCard.value)) hoveredCard.value = null;
+});
+
+watch(hoveredCard, (newHover) => {
+	isHovering.value = !!newHover;
+});
+
+watch(isHovering, (newHovering) => {
+	emit("hover", newHovering);
+});
+
+const sortedHand = computed(() => [...props.hand].sort((a, b) => a - b));
 </script>
 
 <style scoped>
@@ -78,6 +101,7 @@ const sortedHand = computed(() => [...hand].sort((a, b) => a - b));
 
 .hand-card--lowest {
 	transform: translateY(-6px);
+	cursor: pointer;
 }
 
 .hand-card:hover {
@@ -135,6 +159,27 @@ const sortedHand = computed(() => [...hand].sort((a, b) => a - b));
 	text-transform: uppercase;
 	color: var(--text-muted);
 	align-self: center;
+}
+
+.btn-next-level {
+	font-family: var(--font-mono);
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	padding: 10px 24px;
+	background: transparent;
+	color: var(--green-bright);
+	border: 1px solid var(--green-dim);
+	border-radius: var(--radius-md);
+	cursor: pointer;
+	transition: all 200ms ease;
+	align-self: center;
+}
+
+.btn-next-level:hover {
+	background: rgba(57, 255, 138, 0.06);
+	box-shadow: 0 0 20px rgba(57, 255, 138, 0.12);
 }
 
 /* ── Transitions ── */
