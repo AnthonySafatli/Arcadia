@@ -92,7 +92,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from "vue";
+// TODO: Full screen win screen
+
+import { computed } from "vue";
 
 import type { TicTacToeState } from "./TicTacToeState";
 
