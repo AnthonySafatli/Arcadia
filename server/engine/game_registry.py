@@ -20,6 +20,7 @@ def list_games() -> list[dict]:
             "name": cls.NAME,
             "min_players": cls.MIN_PLAYERS,
             "max_players": cls.MAX_PLAYERS,
+            "tags": cls.TAGS
         }
         for slug, cls in _registry.items()
     ]

@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import { useQuery, useMutation } from "@tanstack/vue-query";
 import { usePlayerId } from "@/composables/usePlayerId";
 import { useNickname } from "@/composables/useNickname";
@@ -58,7 +58,7 @@ const selectOptions = computed<SelectItem[]>(
 				x.min_players === x.max_players
 					? `${x.min_players} Players`
 					: `${x.min_players}-${x.max_players} Players`,
-				"x.type",
+				...x.tags,
 			],
 		})) ?? []
 );

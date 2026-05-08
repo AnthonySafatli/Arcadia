@@ -3,4 +3,5 @@ export interface Game {
 	name: string;
 	min_players: number;
 	max_players: number;
+	tags: string[];
 }
