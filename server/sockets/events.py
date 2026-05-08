@@ -88,17 +88,22 @@ def register_socket_events(socketio_instance):
             return
 
         try:
-            state = room_manager.start_game(room)
+            start_state = room_manager.start_game(room)
         except ValueError as e:
             emit("error", {"message": str(e)})
             return
 
-        # Broadcast game_start to everyone in the room
-        socketio_instance.emit(
-            "game_start",
-            {"state": state, "room": room_manager.room_to_dict(room)},
-            to=room_code,
-        )
+        for player in room.players.values():
+            personalized_state = start_state(player.player_id)
+
+            socketio_instance.emit(
+                "game_start",
+                {
+                    "state": personalized_state,
+                    "room": room_manager.room_to_dict(room),
+                },
+                to=player.socket_id, 
+            )
 
     @socketio_instance.on("change_nickname")
     def on_change_nickname(data):
@@ -138,16 +143,24 @@ def register_socket_events(socketio_instance):
             return
 
         try:
-            new_state = room.game.on_action(player_id, action)
+            get_new_state = room.game.on_action(player_id, action)
         except ValueError as e:
             emit("error", {"message": str(e)})
             return
 
         winner = room.game.is_over()
-        
-        # Broadcast new state to everyone in the room
-        socketio_instance.emit("game_state", {"state": new_state}, to=room_code)
 
+        for player in room.players.values():
+            personalized_state = get_new_state(player.player_id)
+
+            socketio_instance.emit(
+                "game_state",
+                {
+                    "state": personalized_state,
+                },
+                to=player.socket_id, 
+            )
+        
         if winner:
             socketio_instance.emit(
                 "game_over",

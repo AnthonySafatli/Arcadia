@@ -30,10 +30,10 @@ class TheMind(BaseGame):
         super().__init__(room_code, players, host_id)
         self._set_initial_state()
 
-    def on_start(self) -> dict:
-        return self._state()
+    def on_start(self) -> callable[str, dict]:
+        return self._state
     
-    def on_action(self, player_id: str, action: dict) -> dict:
+    def on_action(self, player_id: str, action: dict) -> callable[str, dict]:
         """
         Action format:
             { "type": "hover", "state": bool }
@@ -61,16 +61,15 @@ class TheMind(BaseGame):
         else:
             raise ValueError(f"Unknown action type: {action_type!r}")
 
-    def _handle_hover(self, player_id: str, action: dict) -> dict:
+    def _handle_hover(self, player_id: str, action: dict) -> callable[str, dict]:
         state = bool(action.get("state"))
         if state is None or state is not bool:
             raise ValueError("Invalid action.")
         
         self.is_hovering[player_id] = state
-        return self._state()
+        return self._state
 
-
-    def _handle_place(self, player_id: str) -> dict:
+    def _handle_place(self, player_id: str) -> callable[str, dict]:
         if len(self.player_hands[player_id]) == 0:
             raise ValueError("You have no cards in your hand.")
 
@@ -103,9 +102,11 @@ class TheMind(BaseGame):
                 for p, hand in self.player_hands.items()
             }
 
-        return self._state()
+        # TODO: New level
+
+        return self._state
     
-    def _handle_throwing_star(self, player_id: str, action: dict) -> dict:
+    def _handle_throwing_star(self, player_id: str, action: dict) -> callable[str, dict]:
         state = bool(action.get("state"))
         if state is None or state is not bool:
             raise ValueError("Invalid action.")
@@ -115,9 +116,9 @@ class TheMind(BaseGame):
             for player in self.players:
                 self._handle_place(player["player_id"])
 
-        return self._state()
+        return self._state
 
-    def _handle_focus(self, player_id: str, action: dict) -> dict:
+    def _handle_focus(self, player_id: str, action: dict) -> callable[str, dict]:
         state = bool(action.get("state"))
         if state is None or state is not bool:
             raise ValueError("Invalid action.")
@@ -126,16 +127,16 @@ class TheMind(BaseGame):
         if all(f == True for f in self.wants_focus.values()):
             self.wants_focus = {p: False for p in self.wants_focus}
         
-        return self._state()
+        return self._state
 
-    def _handle_reset(self, player_id: str):
+    def _handle_reset(self, player_id: str) -> callable[str, dict]:
         if player_id != self.host_id:
             raise ValueError("Only the host can reset the game.")
         if self.is_over():
             raise ValueError("Game is not over yet.")
         
         self._set_initial_state()
-        return self._state()
+        return self._state
 
     def is_over(self) -> str | None:
         max_level = self.MAX_LEVEL[len(self.players)]
