@@ -22,6 +22,8 @@
 				@place="place"
 				@hover="hover"
 				@next-level="nextLevel" />
+
+			<!-- <GameOverlay visible title="Throwing Star" subtitle="wanted by mr man"/> -->
 		</div>
 	</div>
 </template>
@@ -30,6 +32,7 @@ import { computed } from "vue";
 
 import type { TheMindState } from "./TheMindState";
 
+import GameOverlay from "@/components/GameOverlay.vue";
 import TopHud from "./TopHud.vue";
 import PlayArea from "./PlayArea.vue";
 import YourHand from "./YourHand.vue";

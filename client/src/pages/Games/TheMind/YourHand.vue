@@ -19,7 +19,7 @@
 				</div>
 				<div v-if="idx === 0" class="hand-card-glow" />
 			</div>
-			<button v-else-if="nextLevelBtn" class="btn-next-level" @click="$emit('nextLevel')">
+			<button v-if="nextLevelBtn" class="btn-next-level" @click="$emit('nextLevel')">
 				next level
 			</button>
 			<div v-else-if="hand.length === 0" class="hand-empty">no cards</div>
