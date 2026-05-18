@@ -23,7 +23,23 @@
 				@hover="hover"
 				@next-level="nextLevel" />
 
-			<!-- <GameOverlay visible title="Throwing Star" subtitle="wanted by mr man"/> -->
+			<div class="btn-group">
+				<button v-if="room?.host_player_id == playerId" class="action-btn" @click="reset">
+					reset game
+				</button>
+				<button class="action-btn" @click="focus">reset focus</button>
+				<button class="action-btn" @click="() => throwingStar(!playerThrowingStar)">
+					{{ playerThrowingStar ? "cancel" : "suggest" }} throwing star
+				</button>
+			</div>
+
+			<GameOverlay
+				:visible="focusCount > 0"
+				title="Restart Focus"
+				subtitle="Someone has suggested resetting the focus">
+				<p>{{ focusCount }} / {{ room?.players.length }} players are focused</p>
+				<button class="btn btn-primary" v-if="!playerFocus" @click="focus">Focus</button>
+			</GameOverlay>
 		</div>
 	</div>
 </template>
@@ -47,6 +63,14 @@ const { sendAction } = useSocket();
 const { room, state: socketState } = useGameRoom();
 const state = computed(() => socketState.value as TheMindState);
 
+const focusCount = computed(() => Object.values(state.value.player_focus).filter((v) => v).length);
+const playerFocus = computed(() => state.value.player_focus[playerId]);
+
+const throwingStarsCount = computed(
+	() => Object.values(state.value.throwing_stars).filter((v) => v).length
+);
+const playerThrowingStar = computed(() => state.value.player_throwing_star[playerId]);
+
 const showNextLevelBtn = computed(
 	() =>
 		room.value?.host_player_id === playerId &&
@@ -69,8 +93,8 @@ function throwingStar(state: boolean) {
 	sendAction(room.value?.code!, playerId, { type: "throwing_star", state: state });
 }
 
-function focus(state: boolean) {
-	sendAction(room.value?.code!, playerId, { type: "focus", state: state });
+function focus() {
+	sendAction(room.value?.code!, playerId, { type: "focus", state: true });
 }
 
 function reset() {
@@ -115,5 +139,37 @@ function reset() {
 	flex-direction: column;
 	gap: 0;
 	padding: 20px 24px 28px;
+}
+
+.btn-group {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	margin-top: 20px;
+}
+
+.action-btn {
+	font-family: var(--font-mono);
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	padding: 10px 24px;
+	background: transparent;
+	color: var(--green-bright);
+	border: 1px solid var(--green-dim);
+	border-radius: var(--radius-md);
+	cursor: pointer;
+	transition: all 200ms ease;
+}
+
+.action-btn:hover {
+	background: rgba(57, 255, 138, 0.06);
+	box-shadow: 0 0 20px rgba(57, 255, 138, 0.12);
+}
+
+.btn-primary {
+	margin-top: 10px;
 }
 </style>

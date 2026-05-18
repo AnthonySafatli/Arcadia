@@ -1,12 +1,12 @@
 <template>
-	<Teleport to="body">
+	<Teleport to="#modals">
 		<Transition name="overlay">
 			<div class="overlay" v-if="visible">
 				<div class="overlay-backdrop" @click="emit('backdropClick')" />
 				<div class="overlay-content">
 					<p v-if="subtitle" class="overlay-subtitle">{{ subtitle }}</p>
 					<h1 class="overlay-title">{{ title }}</h1>
-					<div v-if="$slots.default" class="overlay-actions">
+					<div v-if="$slots.default">
 						<slot />
 					</div>
 				</div>
@@ -75,15 +75,6 @@ const emit = defineEmits(["backdropClick"]);
 	line-height: 1;
 	color: var(--text-primary);
 	text-transform: uppercase;
-}
-
-.overlay-actions {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-	margin-top: 8px;
-	flex-wrap: wrap;
-	justify-content: center;
 }
 
 /* Transition */

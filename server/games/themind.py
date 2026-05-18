@@ -123,7 +123,7 @@ class TheMind(BaseGame):
     
     def _handle_throwing_star(self, player_id: str, action: dict) -> callable[str, dict]:
         state = bool(action.get("state"))
-        if state is None or state is not bool:
+        if state is None or type(state) is not bool:
             raise ValueError("Invalid action.")
         
         self.wants_throwing_star[player_id] = state
@@ -135,7 +135,7 @@ class TheMind(BaseGame):
 
     def _handle_focus(self, player_id: str, action: dict) -> callable[str, dict]:
         state = bool(action.get("state"))
-        if state is None or state is not bool:
+        if state is None or type(state) is not bool:
             raise ValueError("Invalid action.")
         
         self.wants_focus[player_id] = state
