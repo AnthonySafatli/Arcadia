@@ -38,12 +38,37 @@
 				<p>{{ focusCount }} / {{ room?.players.length }} players are focused</p>
 				<button class="btn btn-primary" v-if="!playerFocus" @click="focus">Focus</button>
 			</GameOverlay>
+
+			<GameOverlay
+				:visible="gameOverStatus == 'win'"
+				title="You Win!"
+				subtitle="Congratulations! You have completed the mind">
+				<button
+					class="btn btn-primary"
+					v-if="room?.host_player_id == playerId"
+					@click="reset">
+					Restart
+				</button>
+			</GameOverlay>
+
+			<GameOverlay
+				:visible="gameOverStatus == 'loss'"
+				title="You Loose!"
+				subtitle="You have run out of lives">
+				<button
+					class="btn btn-primary"
+					v-if="room?.host_player_id == playerId"
+					@click="reset">
+					Restart
+				</button>
+			</GameOverlay>
 		</div>
 	</div>
 </template>
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
+import type { GameOverEvent } from "@/dtos/SocketEventDto";
 import type { TheMindState } from "./TheMindState";
 
 import GameOverlay from "@/components/GameOverlay.vue";
@@ -58,8 +83,14 @@ import { useSocket } from "@/composables/useSocket";
 
 const playerId = usePlayerId();
 
+const gameOverStatus = ref<string | null>(null);
+
+function gameOver(data: GameOverEvent) {
+	gameOverStatus.value = data.winner;
+}
+
 const { sendAction } = useSocket();
-const { room, state: socketState } = useGameRoom();
+const { room, state: socketState } = useGameRoom(gameOver);
 const state = computed(() => socketState.value as TheMindState);
 
 const focusCount = computed(

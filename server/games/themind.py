@@ -64,6 +64,9 @@ class TheMind(BaseGame):
             raise ValueError(f"Unknown action type: {action_type!r}")
 
     def _handle_hover(self, player_id: str, action: dict) -> callable[str, dict]:
+        if self.is_over():
+            raise ValueError("Game is over")
+        
         state = bool(action.get("state"))
         if state is None or type(state) is not bool:
             raise ValueError("Invalid action.")
@@ -72,6 +75,9 @@ class TheMind(BaseGame):
         return self._state
 
     def _handle_place(self, player_id: str) -> callable[str, dict]:
+        if self.is_over():
+            raise ValueError("Game is over")
+        
         if len(self.player_hands[player_id]) == 0:
             raise ValueError("You have no cards in your hand.")
 
@@ -107,6 +113,9 @@ class TheMind(BaseGame):
         return self._state
     
     def _handle_next_level(self, player_id: str):
+        if self.is_over():
+            raise ValueError("Game is over")
+        
         if player_id != self.host_id:
             raise ValueError("Only the host can move to the next level.")
         
@@ -122,6 +131,9 @@ class TheMind(BaseGame):
         return self._state
     
     def _handle_throwing_star(self, player_id: str, action: dict) -> callable[str, dict]:
+        if self.is_over():
+            raise ValueError("Game is over")
+        
         state = bool(action.get("state"))
         if state is None or type(state) is not bool:
             raise ValueError("Invalid action.")
@@ -144,6 +156,9 @@ class TheMind(BaseGame):
         return self._state
 
     def _handle_focus(self, player_id: str, action: dict) -> callable[str, dict]:
+        if self.is_over():
+            raise ValueError("Game is over")
+        
         state = bool(action.get("state"))
         if state is None or type(state) is not bool:
             raise ValueError("Invalid action.")
@@ -157,8 +172,6 @@ class TheMind(BaseGame):
     def _handle_reset(self, player_id: str) -> callable[str, dict]:
         if player_id != self.host_id:
             raise ValueError("Only the host can reset the game.")
-        if self.is_over():
-            raise ValueError("Game is not over yet.")
         
         self._set_initial_state()
         return self._state
