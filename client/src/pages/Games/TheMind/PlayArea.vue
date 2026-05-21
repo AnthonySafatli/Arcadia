@@ -25,15 +25,12 @@
 
 			<!-- Top card label -->
 			<div v-if="topCard" class="pile-label">
-				<span
-					class="pile-label-text"
-					:class="topCard.type === 'discarded' ? 'pile-label--red' : ''">
-					{{ topCard.type === "discarded" ? "last: mistake" : "last played" }}
-				</span>
-				<span
-					class="pile-label-value"
-					:class="topCard.type === 'discarded' ? 'pile-label--red' : ''">
+				<span class="pile-label-text">last played</span>
+				<span class="pile-label-value">
 					{{ topCard.value }}
+					<template v-if="recentDiscards.length > 0">
+						<span class="pile-label--red"> · {{ recentDiscards.join(" · ") }}</span>
+					</template>
 				</span>
 			</div>
 		</div>
@@ -71,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, watch, ref } from "vue";
 
 import type { Player } from "@/dtos/PlayerDto";
 
@@ -109,6 +106,25 @@ function cardRotation(idx: number) {
 	const rotations = [0, -2, 2, -3, 3];
 	return `${rotations[idx] ?? (Math.random() > 0.5 ? 2 : -2)}deg`;
 }
+
+const recentDiscards = ref<number[]>([]);
+let prevDiscarded: number[] = [];
+
+watch(
+	() => props.discarded,
+	(newVal) => {
+		const added = newVal.filter((v) => !prevDiscarded.includes(v));
+		if (added.length > 0) recentDiscards.value = added;
+		prevDiscarded = [...newVal];
+	}
+);
+
+watch(
+	() => props.placed,
+	() => {
+		recentDiscards.value = [];
+	}
+);
 </script>
 
 <style scoped>
