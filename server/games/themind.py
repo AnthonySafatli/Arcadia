@@ -129,7 +129,17 @@ class TheMind(BaseGame):
         self.wants_throwing_star[player_id] = state
         if all(ts == True for ts in self.wants_throwing_star.values()):
             for player in self.players:
-                self._handle_place(player["player_id"])
+                id = player["player_id"]
+
+                if len(self.player_hands[id]) == 0:
+                    continue
+
+                lowest_card = min(self.player_hands[id])
+                self.player_hands[id].remove(lowest_card)
+                self.placed.append(lowest_card)
+
+            self.placed.sort()
+            self.wants_throwing_star = {player["player_id"]: False for player in self.players}            
 
         return self._state
 
