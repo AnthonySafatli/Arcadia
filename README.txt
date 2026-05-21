@@ -7,6 +7,7 @@ One stop shop for online games except not really
 - Proper gameover screens
 - debuging rejoining / disconnected player
 - Add logic for someone joining halfway
+- Add disconnected state
 
 ### the mind
 

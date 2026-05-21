@@ -33,6 +33,16 @@
 				</button>
 			</div>
 
+			<Transition name="star-fade">
+				<div v-if="throwingStarsCount > 0" class="throwing-star-banner">
+					<StarIcon :active="true" :size="14" class="star-icon" />
+					<span class="star-text">throwing star</span>
+					<span class="star-count"
+						>{{ throwingStarsCount }} / {{ room?.players.length }}</span
+					>
+				</div>
+			</Transition>
+
 			<GameOverlay
 				:visible="focusCount > 0"
 				title="Restart Focus"
@@ -52,6 +62,7 @@ import GameOverlay from "@/components/GameOverlay.vue";
 import TopHud from "./TopHud.vue";
 import PlayArea from "./PlayArea.vue";
 import YourHand from "./YourHand.vue";
+import StarIcon from "./StarIcon.vue";
 
 import { usePlayerId } from "@/composables/usePlayerId";
 import { useGameRoom } from "@/composables/useGameRoom";
@@ -63,13 +74,15 @@ const { sendAction } = useSocket();
 const { room, state: socketState } = useGameRoom();
 const state = computed(() => socketState.value as TheMindState);
 
-const focusCount = computed(() => Object.values(state.value.player_focus).filter((v) => v).length);
-const playerFocus = computed(() => state.value.player_focus[playerId]);
-
-const throwingStarsCount = computed(
-	() => Object.values(state.value.throwing_stars).filter((v) => v).length
+const focusCount = computed(
+	() => Object.values(state.value.player_focus ?? {}).filter((v) => v).length
 );
-const playerThrowingStar = computed(() => state.value.player_throwing_star[playerId]);
+const playerFocus = computed(() => state.value.player_focus?.[playerId]);
+
+const playerThrowingStar = computed(() => state.value.player_throwing_stars?.[playerId]);
+const throwingStarsCount = computed(
+	() => Object.values(state.value.player_throwing_stars ?? {}).filter((v) => v).length
+);
 
 const showNextLevelBtn = computed(
 	() =>
@@ -171,5 +184,71 @@ function reset() {
 
 .btn-primary {
 	margin-top: 10px;
+}
+
+.throwing-star-banner {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	margin-top: 12px;
+	padding: 10px 24px;
+	border: 1px solid var(--green-dim);
+	border-radius: var(--radius-md);
+	background: rgba(57, 255, 138, 0.04);
+	font-family: var(--font-mono);
+	font-size: 0.78rem;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--green-bright);
+	animation: star-pulse 1.4s ease-in-out infinite;
+}
+
+.star-icon {
+	animation: star-spin 2s linear infinite;
+	display: inline-block;
+	font-size: 0.9rem;
+}
+
+.star-count {
+	color: var(--green-bright);
+	font-weight: 500;
+}
+
+.star-text {
+	color: var(--text-secondary);
+}
+
+@keyframes star-pulse {
+	0%,
+	100% {
+		box-shadow: 0 0 8px rgba(57, 255, 138, 0.1);
+		border-color: var(--green-dim);
+	}
+	50% {
+		box-shadow: 0 0 20px rgba(57, 255, 138, 0.25);
+		border-color: var(--green-mid);
+	}
+}
+
+@keyframes star-spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.star-fade-enter-active,
+.star-fade-leave-active {
+	transition:
+		opacity 300ms ease,
+		transform 300ms ease;
+}
+.star-fade-enter-from,
+.star-fade-leave-to {
+	opacity: 0;
+	transform: translateY(6px);
 }
 </style>

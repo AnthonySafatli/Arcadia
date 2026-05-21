@@ -9,6 +9,6 @@ export interface TheMindState {
 
 	player_hands: Record<string, number>;
 	player_hovering: Record<string, boolean>;
-	player_throwing_star: Record<string, boolean>;
+	player_throwing_stars: Record<string, boolean>;
 	player_focus: Record<string, boolean>;
 }

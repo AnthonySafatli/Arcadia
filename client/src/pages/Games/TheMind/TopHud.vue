@@ -27,19 +27,7 @@
 						:key="i"
 						class="pip pip-star"
 						:class="{ 'pip--active': i <= throwingStars }">
-						<svg v-if="i <= throwingStars" viewBox="0 0 16 16" width="10" height="10">
-							<polygon
-								points="8,1 10,6 15,6 11,9.5 12.5,15 8,12 3.5,15 5,9.5 1,6 6,6"
-								fill="currentColor" />
-						</svg>
-
-						<svg v-else viewBox="0 0 16 16" width="10" height="10">
-							<polygon
-								points="8,1 10,6 15,6 11,9.5 12.5,15 8,12 3.5,15 5,9.5 1,6 6,6"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="1.2" />
-						</svg>
+						<StarIcon :active="i <= throwingStars" :size="10" />
 					</span>
 				</div>
 			</div>
@@ -53,6 +41,8 @@
 </template>
 
 <script setup lang="ts">
+import StarIcon from "./StarIcon.vue";
+
 const props = defineProps<{
 	level: number;
 	lives: number;
