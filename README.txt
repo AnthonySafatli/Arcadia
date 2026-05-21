@@ -11,6 +11,5 @@ One stop shop for online games except not really
 
 ### the mind
 
-- Throwing stars
 - Proper error display
 - Proper display of history

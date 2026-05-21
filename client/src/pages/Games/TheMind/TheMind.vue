@@ -23,25 +23,13 @@
 				@hover="hover"
 				@next-level="nextLevel" />
 
-			<div class="btn-group">
-				<button v-if="room?.host_player_id == playerId" class="action-btn" @click="reset">
-					reset game
-				</button>
-				<button class="action-btn" @click="focus">reset focus</button>
-				<button class="action-btn" @click="() => throwingStar(!playerThrowingStar)">
-					{{ playerThrowingStar ? "cancel" : "suggest" }} throwing star
-				</button>
-			</div>
-
-			<Transition name="star-fade">
-				<div v-if="throwingStarsCount > 0" class="throwing-star-banner">
-					<StarIcon :active="true" :size="14" class="star-icon" />
-					<span class="star-text">throwing star</span>
-					<span class="star-count"
-						>{{ throwingStarsCount }} / {{ room?.players.length }}</span
-					>
-				</div>
-			</Transition>
+			<ExtraActions
+				:host-player-id="room?.host_player_id ?? ''"
+				:player-count="room?.players.length ?? 0"
+				:player-throwing-stars="state.player_throwing_stars"
+				@focus="focus"
+				@throwing-star="throwingStar"
+				@reset="reset" />
 
 			<GameOverlay
 				:visible="focusCount > 0"
@@ -62,7 +50,7 @@ import GameOverlay from "@/components/GameOverlay.vue";
 import TopHud from "./TopHud.vue";
 import PlayArea from "./PlayArea.vue";
 import YourHand from "./YourHand.vue";
-import StarIcon from "./StarIcon.vue";
+import ExtraActions from "./ExtraActions.vue";
 
 import { usePlayerId } from "@/composables/usePlayerId";
 import { useGameRoom } from "@/composables/useGameRoom";
@@ -78,11 +66,6 @@ const focusCount = computed(
 	() => Object.values(state.value.player_focus ?? {}).filter((v) => v).length
 );
 const playerFocus = computed(() => state.value.player_focus?.[playerId]);
-
-const playerThrowingStar = computed(() => state.value.player_throwing_stars?.[playerId]);
-const throwingStarsCount = computed(
-	() => Object.values(state.value.player_throwing_stars ?? {}).filter((v) => v).length
-);
 
 const showNextLevelBtn = computed(
 	() =>
@@ -102,8 +85,11 @@ function nextLevel() {
 	sendAction(room.value?.code!, playerId, { type: "next_level" });
 }
 
-function throwingStar(state: boolean) {
-	sendAction(room.value?.code!, playerId, { type: "throwing_star", state: state });
+function throwingStar() {
+	sendAction(room.value?.code!, playerId, {
+		type: "throwing_star",
+		state: !state.value.player_throwing_stars[playerId],
+	});
 }
 
 function focus() {
@@ -184,71 +170,5 @@ function reset() {
 
 .btn-primary {
 	margin-top: 10px;
-}
-
-.throwing-star-banner {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 10px;
-	margin-top: 12px;
-	padding: 10px 24px;
-	border: 1px solid var(--green-dim);
-	border-radius: var(--radius-md);
-	background: rgba(57, 255, 138, 0.04);
-	font-family: var(--font-mono);
-	font-size: 0.78rem;
-	letter-spacing: 0.1em;
-	text-transform: uppercase;
-	color: var(--green-bright);
-	animation: star-pulse 1.4s ease-in-out infinite;
-}
-
-.star-icon {
-	animation: star-spin 2s linear infinite;
-	display: inline-block;
-	font-size: 0.9rem;
-}
-
-.star-count {
-	color: var(--green-bright);
-	font-weight: 500;
-}
-
-.star-text {
-	color: var(--text-secondary);
-}
-
-@keyframes star-pulse {
-	0%,
-	100% {
-		box-shadow: 0 0 8px rgba(57, 255, 138, 0.1);
-		border-color: var(--green-dim);
-	}
-	50% {
-		box-shadow: 0 0 20px rgba(57, 255, 138, 0.25);
-		border-color: var(--green-mid);
-	}
-}
-
-@keyframes star-spin {
-	from {
-		transform: rotate(0deg);
-	}
-	to {
-		transform: rotate(360deg);
-	}
-}
-
-.star-fade-enter-active,
-.star-fade-leave-active {
-	transition:
-		opacity 300ms ease,
-		transform 300ms ease;
-}
-.star-fade-enter-from,
-.star-fade-leave-to {
-	opacity: 0;
-	transform: translateY(6px);
 }
 </style>
