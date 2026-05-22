@@ -26,6 +26,7 @@ class Wordle(BaseGame):
     MIN_PLAYERS = 2
     MAX_PLAYERS = 5
     TAGS = ["word game", "competitive"]
+    ICON_NAME = "wordle"
 
     def __init__(self, room_code, players, host_id):
         super().__init__(room_code, players, host_id)
