@@ -1,6 +1,6 @@
 <template>
 	<div class="game-canvas">
-		<TicTacToe v-if="room.game_slug === 'tictactoe'" />
+		<TicTacToe v-if="room.game_slug === 'tic-tac-toe'" />
 		<TheMind v-else-if="room.game_slug === 'the-mind'" />
 		<Wordle v-else-if="room.game_slug === 'wordle'" />
 		<p v-else class="placeholder-text">Game not found</p>

@@ -16,7 +16,6 @@
 					]">
 					<span class="score-you">you</span>
 					<div class="score-main">
-						<span class="score-mark">{{ markFor(playerId) }}</span>
 						<span class="score-value">{{ state.scores[playerId] }}</span>
 					</div>
 				</div>
@@ -32,12 +31,11 @@
 						{ 'score-block--active': isOpponentTurn && !state.winner },
 						markForClass(opponent?.player_id!),
 					]">
-					<span class="score-you">&nbsp;</span>
+					<span class="score-you">Opponent</span>
 					<div class="score-main">
 						<span class="score-value">{{
 							state.scores[opponent?.player_id ?? ""]
 						}}</span>
-						<span class="score-mark">{{ markFor(opponent?.player_id!) }}</span>
 					</div>
 				</div>
 			</div>
@@ -60,8 +58,24 @@
 						<line x1="8" y1="8" x2="32" y2="32" />
 						<line x1="32" y1="8" x2="8" y2="32" />
 					</svg>
+
 					<svg v-else-if="markFor(cell) === 'O'" class="mark mark-o" viewBox="0 0 40 40">
 						<circle cx="20" cy="20" r="11" />
+					</svg>
+
+					<svg
+						v-else
+						class="mark mark-preview"
+						:class="markForClass(playerId)"
+						viewBox="0 0 40 40">
+						<template v-if="markFor(playerId) === 'X'">
+							<line x1="8" y1="8" x2="32" y2="32" />
+							<line x1="32" y1="8" x2="8" y2="32" />
+						</template>
+
+						<template v-else>
+							<circle cx="20" cy="20" r="11" />
+						</template>
 					</svg>
 				</button>
 			</div>
@@ -243,12 +257,15 @@ function resetGame() {
 
 .board {
 	display: grid;
-	grid-template-columns: repeat(3, 1fr);
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	grid-template-rows: repeat(3, minmax(0, 1fr));
 	gap: 3px;
+
 	background: var(--bg-border);
 	border-radius: var(--radius-md);
 	overflow: hidden;
 	border: 1px solid var(--bg-border);
+
 	width: 100%;
 	max-width: 360px;
 	aspect-ratio: 1;
@@ -263,6 +280,11 @@ function resetGame() {
 	justify-content: center;
 	transition: background 150ms ease;
 	padding: 0;
+	width: 100%;
+	height: 100%;
+	aspect-ratio: 1 / 1;
+	min-width: 0;
+	min-height: 0;
 }
 
 .cell--empty:not(:disabled):hover {
@@ -357,26 +379,6 @@ function resetGame() {
 	gap: 8px;
 }
 
-.score-mark {
-	font-family: var(--font-display);
-	font-size: 1.4rem;
-	line-height: 1;
-	opacity: 0.4;
-	transition: opacity 200ms ease;
-}
-
-.x .score-mark {
-	color: var(--green-bright);
-}
-
-.o .score-mark {
-	color: #ff6b6b;
-}
-
-.score-block--active .score-mark {
-	opacity: 1;
-}
-
 .x.score-block.score-block--active {
 	border-color: var(--green-dim);
 	box-shadow: 0 0 12px rgba(57, 255, 138, 0.2);
@@ -430,5 +432,29 @@ function resetGame() {
 
 .score-block--active .score-you {
 	opacity: 1;
+}
+
+.mark-preview {
+	opacity: 0;
+	transition: opacity 120ms ease;
+}
+
+.cell--empty:not(:disabled):hover .mark-preview {
+	opacity: 0.22;
+}
+
+.mark-preview line,
+.mark-preview circle {
+	fill: none;
+	stroke-width: 3.5;
+	stroke-linecap: round;
+}
+
+.mark-preview.x line {
+	stroke: var(--green-bright);
+}
+
+.mark-preview.o circle {
+	stroke: #ff6b6b;
 }
 </style>
