@@ -1,31 +1,31 @@
-type TileResult = "correct" | "present" | "absent";
+export type TileResult = "correct" | "present" | "absent";
 
-interface Guess {
+export interface Guess {
 	word: string;
 	result: TileResult[];
 	time: number;
 }
 
-interface FinishedInfo {
+export interface FinishedInfo {
 	solved: boolean;
 	guesses: number;
 	finish_time: number;
 }
 
-interface PlayerScore {
+export interface PlayerScore {
 	"1st": number;
 	"2nd": number;
 	"3rd": number;
 }
 
-interface OtherPlayer {
+export interface OtherPlayer {
 	tile_pattern: TileResult[][];
 	guesses_used: number;
 	finished: boolean;
 	finished_info: FinishedInfo | null; // only populated when round_over
 }
 
-interface WordleState {
+export interface WordleState {
 	round: number;
 	round_over: boolean;
 	secret_word: string | null; // only populated when round_over
@@ -37,7 +37,7 @@ interface WordleState {
 	other_players: Record<string, OtherPlayer>;
 }
 
-function defaultWordleState(): WordleState {
+export function defaultWordleState(): WordleState {
 	return {
 		round: 1,
 		round_over: false,
