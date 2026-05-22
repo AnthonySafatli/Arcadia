@@ -5,10 +5,10 @@ import os
 from flask import Flask, send_from_directory
 from flask_socketio import SocketIO
 
-from routes.api import api_bp
-from sockets.events import register_socket_events
+from server.routes.api import api_bp
+from server.sockets.events import register_socket_events
 
-import games
+import server.games
 
 # App setup
 
@@ -20,7 +20,12 @@ app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-change-me")
 
 socketio = SocketIO(
     app,
-    cors_allowed_origins="*",   # TODO: tighten in production
+    cors_allowed_origins=[
+        "http://localhost:5050",
+        "http://127.0.0.1:5050",
+        "https://arcadia.anthonysafatli.ca",
+        "http://arcadia.anthonysafatli.ca",
+    ],
     async_mode="eventlet",
 )
 
@@ -45,4 +50,9 @@ def serve_vue(path):
 # Entry point
 
 if __name__ == "__main__":
-    socketio.run(app, debug=True, host="0.0.0.0", port=5000)
+    socketio.run(
+        app, 
+        host="0.0.0.0", 
+        port=5050,
+        debug=False, 
+        use_reloader=False)

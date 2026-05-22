@@ -1,9 +1,10 @@
 import time
 import threading
+from typing import Callable
 
-from engine.game_registry import get_game_class
-from models.room import Room
-from models.player import Player
+from server.engine.game_registry import get_game_class
+from server.models.room import Room
+from server.models.player import Player
 
 # In-memory store. Replace with Redis for multi-process deployments.
 # TODO: Replace with not in-memory dict
@@ -93,8 +94,6 @@ def change_nickname(room_code: str, player_id: str, nickname: str) -> Player:
     room = get_room(room_code)
     if not room:
         raise ValueError("Room not found.")
-    print(player_id)
-    print(list(room.players.keys()))
     if player_id not in room.players:
         raise ValueError("Player not in room.")
     if not nickname or len(nickname) > 20:
@@ -107,7 +106,7 @@ def register_socket(socket_id: str, room_code: str, player_id: str):
 
 # Game start
 
-def start_game(room: Room) -> callable[str, dict]:
+def start_game(room: Room) -> Callable[[str], dict]:
     """Instantiate the game and return initial state. Raises on bad state."""
     from engine.game_registry import get_game_class
     if room.status != "waiting":

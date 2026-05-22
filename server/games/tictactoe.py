@@ -1,7 +1,8 @@
 import random
+from typing import Callable
 
-from engine.base_game import BaseGame
-from engine.game_registry import register
+from server.engine.base_game import BaseGame
+from server.engine.game_registry import register
 
 @register("tic-tac-toe")
 class TicTacToe(BaseGame):
@@ -19,10 +20,10 @@ class TicTacToe(BaseGame):
             self.players[1]["player_id"]: 0,
         }
 
-    def on_start(self) -> callable[str, dict]:
+    def on_start(self) -> Callable[[str], dict]:
         return self._state
 
-    def on_action(self, player_id: str, action: dict) -> callable[str, dict]:
+    def on_action(self, player_id: str, action: dict) -> Callable[[str], dict]:
         """
         Action format:
             { "type": "cell", "cell": int }  
@@ -38,7 +39,7 @@ class TicTacToe(BaseGame):
         else:
             raise ValueError(f"Unknown action type: {action_type!r}")
 
-    def _handle_cell(self, player_id: str, action: dict) -> callable[str, dict]:
+    def _handle_cell(self, player_id: str, action: dict) -> Callable[[str], dict]:
         if self.winner:
             raise ValueError("Game is already over.")
         if player_id != self.current_turn:
@@ -61,7 +62,7 @@ class TicTacToe(BaseGame):
 
         return self._state
 
-    def _handle_reset(self, player_id: str) -> callable[str, dict]:
+    def _handle_reset(self, player_id: str) -> Callable[[str], dict]:
         if player_id != self.host_id:
             raise ValueError("Only the host can reset the game.")
         if not self.winner:

@@ -3,8 +3,8 @@ import time
 import random
 import string
 
-from models.player import Player
-from engine.base_game import BaseGame
+from server.models.player import Player
+from server.engine.base_game import BaseGame
 
 @dataclass
 class Room:
@@ -16,7 +16,7 @@ class Room:
     game: BaseGame | None = None
     created_at: float = field(default_factory=time.time)
 
-    def generate_code(rooms: dict[str, Room]) -> str:
+    def generate_code(rooms: dict[str, "Room"]) -> str:
         chars = string.ascii_uppercase + string.digits
         while True:
             code = "".join(random.choices(chars, k=6))

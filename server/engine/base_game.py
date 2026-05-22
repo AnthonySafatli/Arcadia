@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Callable
 
 class BaseGame(ABC):
     MIN_PLAYERS: int = 1
@@ -14,11 +14,11 @@ class BaseGame(ABC):
         self.host_id = host_id
 
     @abstractmethod
-    def on_start(self) -> callable[str, dict]:
+    def on_start(self) -> Callable[[str], dict]:
         """Return the initial game state broadcast to all players."""
 
     @abstractmethod
-    def on_action(self, player_id: str, action: dict) -> callable[str, dict]:
+    def on_action(self, player_id: str, action: dict) -> Callable[[str], dict]:
         """
         Handle a player action. Mutate internal state, return new state.
         Raise ValueError with a message if the action is invalid.
@@ -29,7 +29,7 @@ class BaseGame(ABC):
         """Return winning player_id, 'draw', or None if game is still going."""
 
     @abstractmethod
-    def get_state(self, player_id: str) -> callable[str, dict]:
+    def get_state(self, player_id: str) -> Callable[[str], dict]:
         """Return current state of the game"""
 
     @property

@@ -1,8 +1,9 @@
 import random
 import time
+from typing import Callable
 
-from engine.base_game import BaseGame
-from engine.game_registry import register
+from server.engine.base_game import BaseGame
+from server.engine.game_registry import register
 
 WORD_LIST = [
     "crane", "slate", "audio", "stare", "raise", "arose", "snare", "least",
@@ -36,10 +37,10 @@ class Wordle(BaseGame):
             for player in self.players
         }
 
-    def on_start(self) -> callable[str, dict]:
+    def on_start(self) -> Callable[[str], dict]:
         return self._state
 
-    def on_action(self, player_id: str, action: dict) -> callable[str, dict]:
+    def on_action(self, player_id: str, action: dict) -> Callable[[str], dict]:
         """
         Action format:
             { "type": "guess", "word": str }
@@ -61,7 +62,7 @@ class Wordle(BaseGame):
         else:
             raise ValueError(f"Unknown action type: {action_type!r}")
 
-    def _handle_guess(self, player_id: str, action: dict) -> callable[str, dict]:
+    def _handle_guess(self, player_id: str, action: dict) -> Callable[[str], dict]:
         if self.round_over:
             raise ValueError("Round is over.")
 
@@ -97,7 +98,7 @@ class Wordle(BaseGame):
 
         return self._state
 
-    def _handle_next_round(self, player_id: str) -> callable[str, dict]:
+    def _handle_next_round(self, player_id: str) -> Callable[[str], dict]:
         if player_id != self.host_id:
             raise ValueError("Only the host can start the next round.")
         if not self.round_over:
@@ -107,7 +108,7 @@ class Wordle(BaseGame):
         self._set_initial_state(full_reset=False)
         return self._state
 
-    def _handle_reset(self, player_id: str) -> callable[str, dict]:
+    def _handle_reset(self, player_id: str) -> Callable[[str], dict]:
         if player_id != self.host_id:
             raise ValueError("Only the host can reset the game.")
 

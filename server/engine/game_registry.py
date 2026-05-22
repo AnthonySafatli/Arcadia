@@ -1,4 +1,4 @@
-from engine.base_game import BaseGame
+from server.engine.base_game import BaseGame
 
 _registry: dict[str, type[BaseGame]] = {}
 

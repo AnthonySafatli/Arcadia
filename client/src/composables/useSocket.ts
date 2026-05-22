@@ -28,7 +28,7 @@ export interface ClientToServerEvents {
 }
 
 // ---- Singleton ----
-const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io("http://localhost:5000", {
+const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(window.location.origin, {
 	autoConnect: false,
 });
 

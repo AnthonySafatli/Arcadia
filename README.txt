@@ -6,10 +6,10 @@ One stop shop for online games except not really
 
 - TicTacToe
 - The Mind
+- Wordle
 
 ### Future Games
 
-- Wordle
 - Connect Four
 - Dots and Boxes
 - Battle Ship
@@ -18,5 +18,6 @@ One stop shop for online games except not really
 
 ## TODO
 
+- Create SQLite DB for persistance
 - Add logic for someone joining halfway
 - Add logic for someone disconnecting halfway

@@ -1,3 +1,3 @@
-from games import tictactoe
-from games import themind
-from games import wordle
+from server.games import tictactoe
+from server.games import themind
+from server.games import wordle
