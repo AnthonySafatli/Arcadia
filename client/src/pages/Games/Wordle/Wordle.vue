@@ -8,8 +8,21 @@
 			<!-- HEADER -->
 			<div class="wordle-header">
 				<div class="header-left">
-					<span class="wordle-title">wordle</span>
 					<span class="round-label">round {{ state.round }}</span>
+					<div class="tally-row">
+						<span class="tally tally--1st" :title="'1st place'">
+							<span class="tally-icon">🥇</span>
+							<span class="tally-num">{{ state.scores[playerId]?.["1st"] }}</span>
+						</span>
+						<span class="tally tally--2nd" :title="'2nd place'">
+							<span class="tally-icon">🥈</span>
+							<span class="tally-num">{{ state.scores[playerId]?.["2nd"] }}</span>
+						</span>
+						<span class="tally tally--3rd" :title="'3rd place'">
+							<span class="tally-icon">🥉</span>
+							<span class="tally-num">{{ state.scores[playerId]?.["3rd"] }}</span>
+						</span>
+					</div>
 				</div>
 				<div class="header-right">
 					<span class="wordle-status" :class="statusClass">{{ statusText }}</span>
@@ -18,37 +31,38 @@
 
 			<!-- PLAYER SCORES -->
 			<div class="scores-row">
-				<div
-					v-for="(score, pid) in state.scores"
-					:key="pid"
-					class="player-score"
-					:class="{
-						'player-score--me': pid === playerId,
-						'player-score--done': isPlayerDone(pid),
-					}">
-					<span class="player-name">{{ playerName(pid) }}</span>
-					<div class="tally-row">
-						<span class="tally tally--1st" :title="'1st place'">
-							<span class="tally-icon">🥇</span>
-							<span class="tally-num">{{ score["1st"] }}</span>
-						</span>
-						<span class="tally tally--2nd" :title="'2nd place'">
-							<span class="tally-icon">🥈</span>
-							<span class="tally-num">{{ score["2nd"] }}</span>
-						</span>
-						<span class="tally tally--3rd" :title="'3rd place'">
-							<span class="tally-icon">🥉</span>
-							<span class="tally-num">{{ score["3rd"] }}</span>
-						</span>
-					</div>
-					<!-- opponent tile preview -->
-					<div v-if="pid !== playerId" class="mini-grid">
-						<div v-for="(row, ri) in opponentTiles(pid)" :key="ri" class="mini-row">
-							<div
-								v-for="(tile, ti) in row"
-								:key="ti"
-								class="mini-tile"
-								:class="tile"></div>
+				<div v-for="(score, pid) in state.scores" :key="pid">
+					<div
+						v-if="pid !== playerId"
+						class="player-score"
+						:class="{
+							'player-score--me': pid === playerId,
+							'player-score--done': isPlayerDone(pid),
+						}">
+						<span class="player-name">{{ playerName(pid) }}</span>
+						<div class="tally-row">
+							<span class="tally tally--1st" :title="'1st place'">
+								<span class="tally-icon">🥇</span>
+								<span class="tally-num">{{ score["1st"] }}</span>
+							</span>
+							<span class="tally tally--2nd" :title="'2nd place'">
+								<span class="tally-icon">🥈</span>
+								<span class="tally-num">{{ score["2nd"] }}</span>
+							</span>
+							<span class="tally tally--3rd" :title="'3rd place'">
+								<span class="tally-icon">🥉</span>
+								<span class="tally-num">{{ score["3rd"] }}</span>
+							</span>
+						</div>
+						<!-- opponent tile preview -->
+						<div v-if="pid !== playerId" class="mini-grid">
+							<div v-for="(row, ri) in opponentTiles(pid)" :key="ri" class="mini-row">
+								<div
+									v-for="(tile, ti) in row"
+									:key="ti"
+									class="mini-tile"
+									:class="tile"></div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -137,8 +151,6 @@ const errorMsg = ref<string | null>(null);
 const shakeRow = ref<number | null>(null);
 let errorTimeout: ReturnType<typeof setTimeout> | null = null;
 
-// ── Derived ──────────────────────────────────────────────────────────────────
-
 const isHost = computed(() => room.value?.host_player_id === playerId);
 
 const allPlayers = computed(() => room.value?.players ?? []);
@@ -176,8 +188,6 @@ function opponentTiles(pid: string): (TileResult | "empty" | "filled")[][] {
 	return rows;
 }
 
-// ── Status ────────────────────────────────────────────────────────────────────
-
 const statusText = computed(() => {
 	if (state.value.round_over) return "round over";
 	if (state.value.finished) {
@@ -191,8 +201,6 @@ const statusClass = computed(() => ({
 	"status--lose": state.value.finished && !state.value.finished_info?.solved,
 	"status--over": state.value.round_over,
 }));
-
-// ── Board tiles ───────────────────────────────────────────────────────────────
 
 function tileLetter(row: number, col: number): string {
 	if (row < state.value.guesses.length) {
@@ -219,8 +227,6 @@ function tileClass(row: number, col: number): string[] {
 	}
 	return classes;
 }
-
-// ── Input ─────────────────────────────────────────────────────────────────────
 
 function showError(msg: string) {
 	errorMsg.value = msg;
@@ -261,8 +267,6 @@ function handleKey(e: KeyboardEvent) {
 
 onMounted(() => window.addEventListener("keydown", handleKey));
 onUnmounted(() => window.removeEventListener("keydown", handleKey));
-
-// ── Host actions ──────────────────────────────────────────────────────────────
 
 function endRound() {
 	sendAction(room.value?.code!, playerId, { type: "end_round" });
@@ -330,15 +334,6 @@ function resetGame() {
 	display: flex;
 	align-items: baseline;
 	gap: 12px;
-}
-
-.wordle-title {
-	font-family: var(--font-display);
-	font-size: 2rem;
-	letter-spacing: 0.2em;
-	text-transform: uppercase;
-	color: var(--green-bright);
-	text-shadow: 0 0 20px rgba(57, 255, 138, 0.4);
 }
 
 .round-label {
