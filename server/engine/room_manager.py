@@ -37,9 +37,7 @@ def join_room(code: str, player_id: str, nickname: str, socket_id: str) -> tuple
     room = get_room(code)
     if not room:
         raise ValueError("Room not found.")
-    if room.status == "finished":
-        raise ValueError("Game has already ended.")
-
+    
     game_cls = get_game_class(room.game_slug)
 
     is_reconnect = player_id in room.players
@@ -53,7 +51,7 @@ def join_room(code: str, player_id: str, nickname: str, socket_id: str) -> tuple
         player.disconnected_at = None
     else:
         if room.status == "playing":
-            raise ValueError("Game already in progress.")
+            raise ValueError("Game is already in progress.")
         if game_cls and sum(1 for p in room.players.values() if p.connected) >= game_cls.MAX_PLAYERS:
             raise ValueError("Room is full.")
         player = Player(player_id=player_id, nickname=nickname, socket_id=socket_id, connected=True)

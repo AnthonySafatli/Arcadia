@@ -97,6 +97,7 @@
 import { computed } from "vue";
 
 import type { TicTacToeState } from "./TicTacToeState";
+import { defaultTicTacToeState } from "./TicTacToeState";
 
 import { usePlayerId } from "@/composables/usePlayerId";
 import { useGameRoom } from "@/composables/useGameRoom";
@@ -106,7 +107,7 @@ const playerId = usePlayerId();
 
 const { sendAction } = useSocket();
 const { room, state: socketState } = useGameRoom();
-const state = computed(() => socketState.value as TicTacToeState);
+const state = computed(() => (socketState.value as TicTacToeState) ?? defaultTicTacToeState());
 const opponent = computed(() => room.value?.players.find((x) => x.player_id != playerId));
 
 const youWin = computed(() => state.value.winner === playerId);

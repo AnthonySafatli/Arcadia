@@ -1,6 +1,8 @@
+import type { Component } from "vue";
+
 export interface SelectItem {
 	id: string;
 	name: string;
-	icon?: string;
+	icon: Component | null;
 	tags: string[];
 }

@@ -18,6 +18,7 @@ def list_games() -> list[dict]:
         {
             "slug": slug,
             "name": cls.NAME,
+            "icon_name": cls.ICON_NAME,
             "min_players": cls.MIN_PLAYERS,
             "max_players": cls.MAX_PLAYERS,
             "tags": cls.TAGS

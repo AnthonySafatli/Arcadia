@@ -6,6 +6,7 @@ class BaseGame(ABC):
     MAX_PLAYERS: int = 1
     NAME: str = "The Game"
     TAGS: list[str] = []
+    ICON_NAME: str = "base-game"
 
     def __init__(self, room_code: str, players: list[dict], host_id: str):
         self.room_code = room_code

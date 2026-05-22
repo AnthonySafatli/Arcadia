@@ -6,7 +6,9 @@
 			class="select-card"
 			:class="{ selected: modelValue === item.id }"
 			@click="$emit('update:modelValue', item.id)">
-			<div class="select-icon">{{ item.icon }}</div>
+			<div class="select-icon">
+				<component :is="item.icon" width="24" height="24" />
+			</div>
 
 			<div class="select-info">
 				<div class="select-name">{{ item.name }}</div>
@@ -142,5 +144,9 @@ defineEmits<{
 	border-color: var(--green-bright);
 	background: var(--green-bright);
 	box-shadow: 0 0 8px var(--green-glow);
+}
+
+.select-card.selected .select-icon {
+	color: var(--green-bright);
 }
 </style>

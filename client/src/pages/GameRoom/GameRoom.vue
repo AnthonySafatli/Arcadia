@@ -3,14 +3,20 @@
 		<div id="modals"></div>
 		<div class="game-room">
 			<header class="room-header">
-				<router-link to="/" class="wordmark">arcadia</router-link>
+				<div class="logo-section">
+					<router-link to="/" class="wordmark">arcadia</router-link>
+					<div v-if="room?.host_player_id == playerId" class="host-badge">host</div>
+				</div>
 
 				<div class="room-info">
 					<span class="room-label">room</span>
 					<span class="room-code">{{ roomId }}</span>
 				</div>
 
-				<StatusBadge :label="roomStatus" />
+				<div class="room-status-div">
+					<p class="room-game-name" v-if="room">{{ room.game_name }}</p>
+					<StatusBadge :label="roomStatus" />
+				</div>
 			</header>
 
 			<main class="room-body">
@@ -85,14 +91,17 @@ const { data, isError, error, isPending } = useQuery<Room>({
 });
 
 watch(data, (newData) => {
-	if (newData) {
-		room.value = newData;
-		if (room.value.host_player_id == playerId) onConnect();
+	if (!newData) return;
+	room.value = newData;
+	if (!connected.value) {
+		onConnect();
 	}
 });
 
-const roomStatus = computed(
-	() => room.value?.status ?? (isPending.value ? "loading" : isError.value ? "error" : null)
+const roomStatus = computed(() =>
+	connected
+		? (room.value?.status ?? (isPending.value ? "loading" : isError.value ? "error" : null))
+		: "disconnected"
 );
 
 function onConnect() {
@@ -169,6 +178,43 @@ function startGameEvent() {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+}
+
+.room-status-div {
+	display: flex;
+	flex-direction: column;
+	justify-content: end;
+	gap: 5px;
+}
+
+.room-game-name {
+	font-family: var(--font-mono);
+	font-size: 1rem;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+
+.logo-section {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+}
+
+.host-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	font-family: var(--font-mono);
+	font-size: 0.62rem;
+	font-weight: 500;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--bg-base);
+	background: var(--green-bright);
+	padding: 3px 7px;
+	border-radius: 4px;
+	box-shadow: 0 0 10px var(--green-glow);
 }
 
 @keyframes fadeUp {
