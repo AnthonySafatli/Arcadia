@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, type Component } from "vue";
 import { useQuery, useMutation } from "@tanstack/vue-query";
 import { usePlayerId } from "@/composables/usePlayerId";
 import { useNickname } from "@/composables/useNickname";
@@ -30,6 +30,11 @@ import type { SelectItem } from "@/types/SelectItem";
 
 import Page from "@/components/Page.vue";
 import Select from "./Select.vue";
+
+const icons = import.meta.glob("@/assets/game-icons/*.svg", {
+	query: "?component",
+	eager: true,
+}) as Record<string, { default: Component }>;
 
 const { data } = useQuery<Game[]>({
 	queryKey: ["games"],
@@ -47,12 +52,17 @@ const { mutate } = useMutation<Room, Error, NewRoom>({
 const router = useRouter();
 const selected = ref<string | null>(null);
 
+function getIcon(name: string) {
+	const key = Object.keys(icons).find((k) => k.endsWith(`/${name}.svg`));
+	return key ? (icons[key] as { default: Component }).default : null;
+}
+
 const selectOptions = computed<SelectItem[]>(
 	() =>
 		data.value?.map((x) => ({
 			id: x.slug,
 			name: x.name,
-			icon: "⊞",
+			icon: getIcon(x.icon_name),
 			tags: [
 				x.min_players === x.max_players
 					? `${x.min_players} Players`

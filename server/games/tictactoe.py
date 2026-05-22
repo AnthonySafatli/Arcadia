@@ -3,12 +3,13 @@ import random
 from engine.base_game import BaseGame
 from engine.game_registry import register
 
-@register("tictactoe")
+@register("tic-tac-toe")
 class TicTacToe(BaseGame):
     NAME = "Tic Tac Toe"
     MIN_PLAYERS = 2
     MAX_PLAYERS = 2
     TAGS = ["Quick", "Simple"]
+    ICON_NAME = "tic-tac-toe"
 
     def __init__(self, room_code, players, host_id):
         super().__init__(room_code, players, host_id)

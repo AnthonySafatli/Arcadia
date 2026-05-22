@@ -1,6 +1,7 @@
 export interface Game {
 	slug: string;
 	name: string;
+	icon_name: string;
 	min_players: number;
 	max_players: number;
 	tags: string[];

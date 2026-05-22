@@ -9,6 +9,7 @@ class TheMind(BaseGame):
     MIN_PLAYERS = 2
     MAX_PLAYERS = 4
     TAGS = ["thinking", "difficult", "telepathy"]
+    ICON_NAME = "the-mind"
 
     MAX_LEVEL = {
         2: 8,
