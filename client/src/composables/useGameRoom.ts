@@ -9,6 +9,10 @@ const room = ref<Room | null>(null);
 const state = ref<unknown | null>(null);
 const connected = ref(false);
 
+socket.on("disconnect", () => {
+	connected.value = false;
+});
+
 socket.on("joined", (data) => {
 	connected.value = true;
 	room.value = data.room;

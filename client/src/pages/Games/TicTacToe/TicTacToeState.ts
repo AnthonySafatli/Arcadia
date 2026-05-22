@@ -5,3 +5,13 @@ export interface TicTacToeState {
 	winner: string | "draw" | null;
 	scores: Record<string, number>;
 }
+
+export function defaultTicTacToeState(): TicTacToeState {
+	return {
+		board: Array(9).fill(null),
+		current_turn: "",
+		marks: {},
+		winner: null,
+		scores: {},
+	};
+}

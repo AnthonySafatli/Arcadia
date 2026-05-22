@@ -85,9 +85,10 @@ const { data, isError, error, isPending } = useQuery<Room>({
 });
 
 watch(data, (newData) => {
-	if (newData) {
-		room.value = newData;
-		if (room.value.host_player_id == playerId) onConnect();
+	if (!newData) return;
+	room.value = newData;
+	if (!connected.value) {
+		onConnect();
 	}
 });
 

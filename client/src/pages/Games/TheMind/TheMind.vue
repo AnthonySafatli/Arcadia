@@ -68,8 +68,8 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 
-import type { GameOverEvent } from "@/dtos/SocketEventDto";
 import type { TheMindState } from "./TheMindState";
+import { defaultTheMindState } from "./TheMindState";
 
 import GameOverlay from "@/components/GameOverlay.vue";
 import TopHud from "./TopHud.vue";
@@ -81,6 +81,8 @@ import { usePlayerId } from "@/composables/usePlayerId";
 import { useGameRoom } from "@/composables/useGameRoom";
 import { useSocket } from "@/composables/useSocket";
 
+import type { GameOverEvent } from "@/dtos/SocketEventDto";
+
 const playerId = usePlayerId();
 
 const gameOverStatus = ref<string | null>(null);
@@ -91,7 +93,7 @@ function gameOver(data: GameOverEvent) {
 
 const { sendAction } = useSocket();
 const { room, state: socketState } = useGameRoom(gameOver);
-const state = computed(() => socketState.value as TheMindState);
+const state = computed(() => (socketState.value as TheMindState) ?? defaultTheMindState());
 
 const focusCount = computed(
 	() => Object.values(state.value.player_focus ?? {}).filter((v) => v).length
