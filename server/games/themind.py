@@ -3,6 +3,22 @@ import random
 from engine.base_game import BaseGame
 from engine.game_registry import register
 
+MAX_LEVEL = {
+    2: 8,
+    3: 10,
+    4: 12
+}
+MAX_LIVES = 5
+MAX_THROWING_STARS = 3
+REWARDS = {
+    2: "l",
+    3: "ts",
+    5: "l",
+    6: "ts",
+    8: "l",
+    9: "ts",
+}
+
 @register("the-mind")
 class TheMind(BaseGame):
     NAME = "The Mind"
@@ -11,21 +27,6 @@ class TheMind(BaseGame):
     TAGS = ["cooperative", "card game", "telepathy"]
     ICON_NAME = "the-mind"
 
-    MAX_LEVEL = {
-        2: 8,
-        3: 10,
-        4: 12
-    }
-    MAX_LIVES = 5
-    MAX_THROWING_STARS = 3
-    REWARDS = {
-        2: "l",
-        3: "ts",
-        5: "l",
-        6: "ts",
-        8: "l",
-        9: "ts",
-    }
 
     def __init__(self, room_code, players, host_id):
         super().__init__(room_code, players, host_id)
@@ -120,11 +121,11 @@ class TheMind(BaseGame):
         if player_id != self.host_id:
             raise ValueError("Only the host can move to the next level.")
         
-        reward = self.REWARDS.get(self.level)
+        reward = REWARDS.get(self.level)
         if reward == "ts":
-            self.throwing_stars += 1
+            self.throwing_stars = min(self.throwing_stars + 1, MAX_THROWING_STARS)
         elif reward == "l":
-            self.lives += 1
+            self.lives = min(self.lives + 1, MAX_LIVES)
 
         self.level += 1
         self._set_initial_state(full_reset=False, level=self.level)
@@ -178,7 +179,7 @@ class TheMind(BaseGame):
         return self._state
 
     def is_over(self) -> str | None:
-        max_level = self.MAX_LEVEL[len(self.players)]
+        max_level = MAX_LEVEL[len(self.players)]
         if max_level == self.level:
             if all(len(hand) == 0 for hand in self.player_hands.values()):
                 return "win"
