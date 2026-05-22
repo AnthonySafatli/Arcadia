@@ -92,6 +92,8 @@
 </template>
 
 <script setup lang="ts">
+// TODO: Full screen win screen
+
 import { computed } from "vue";
 
 import type { TicTacToeState } from "./TicTacToeState";

@@ -76,6 +76,10 @@ def register_socket_events(socketio_instance):
     @socketio_instance.on("start_game")
     def on_start_game(data):
         """Only the host can start the game."""
+        
+        # TODO: Handle disconnect mid-game
+        # TODO: Handle connecting mid-game
+
         room_code = (data.get("room_code") or "").strip().upper()
         player_id = (data.get("player_id") or "").strip()
 
