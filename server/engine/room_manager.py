@@ -109,7 +109,7 @@ def register_socket(socket_id: str, room_code: str, player_id: str):
 
 # Game start
 
-def start_game(room: Room) -> dict:
+def start_game(room: Room) -> callable[str, dict]:
     """Instantiate the game and return initial state. Raises on bad state."""
     from engine.game_registry import get_game_class
     if room.status != "waiting":

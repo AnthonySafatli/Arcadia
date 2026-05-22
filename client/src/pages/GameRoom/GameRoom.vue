@@ -1,5 +1,6 @@
 <template>
 	<div>
+		<div id="modals"></div>
 		<div class="game-room">
 			<header class="room-header">
 				<router-link to="/" class="wordmark">arcadia</router-link>
@@ -124,6 +125,7 @@ function startGameEvent() {
 	border-bottom: 1px solid var(--bg-border);
 	background: var(--bg-card);
 	flex-shrink: 0;
+	z-index: 101;
 }
 
 .wordmark {

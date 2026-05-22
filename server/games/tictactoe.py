@@ -8,7 +8,7 @@ class TicTacToe(BaseGame):
     NAME = "Tic Tac Toe"
     MIN_PLAYERS = 2
     MAX_PLAYERS = 2
-    TAGS = ["QUICK", "SIMPLE"]
+    TAGS = ["Quick", "Simple"]
 
     def __init__(self, room_code, players, host_id):
         super().__init__(room_code, players, host_id)
@@ -18,15 +18,15 @@ class TicTacToe(BaseGame):
             self.players[1]["player_id"]: 0,
         }
 
-    def on_start(self) -> dict:
-        return self._state()
+    def on_start(self) -> callable[str, dict]:
+        return self._state
 
-    def on_action(self, player_id: str, action: dict) -> dict:
+    def on_action(self, player_id: str, action: dict) -> callable[str, dict]:
         """
         Action format:
-            {"type": "cell", "cell": int}  
+            { "type": "cell", "cell": int }  
                 — place a mark (0-8)
-            {"type": "reset"}              
+            { "type": "reset" }              
                 — reset board (host only, game must be over)
         """
         action_type = action.get("type")
@@ -37,7 +37,7 @@ class TicTacToe(BaseGame):
         else:
             raise ValueError(f"Unknown action type: {action_type!r}")
 
-    def _handle_cell(self, player_id: str, action: dict) -> dict:
+    def _handle_cell(self, player_id: str, action: dict) -> callable[str, dict]:
         if self.winner:
             raise ValueError("Game is already over.")
         if player_id != self.current_turn:
@@ -58,21 +58,21 @@ class TicTacToe(BaseGame):
             other = [p for p in self.player_ids if p != player_id]
             self.current_turn = other[0] if other else player_id
 
-        return self._state()
+        return self._state
 
-    def _handle_reset(self, player_id: str) -> dict:
+    def _handle_reset(self, player_id: str) -> callable[str, dict]:
         if player_id != self.host_id:
             raise ValueError("Only the host can reset the game.")
         if not self.winner:
             raise ValueError("Game is not over yet.")
         self._set_initial_state()
-        return self._state()
+        return self._state
 
     def is_over(self) -> str | None:
         return self.winner
 
     def get_state(self, player_id):
-        return self._state()
+        return self._state(player_id)
 
     def _check_winner(self) -> str | None:
         wins = [(0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6)]
@@ -92,7 +92,7 @@ class TicTacToe(BaseGame):
             self.players[1]["player_id"]: "O",
         }
 
-    def _state(self) -> dict:
+    def _state(self, player_id: str) -> dict:
         return {
             "board": self.board,
             "current_turn": self.current_turn,

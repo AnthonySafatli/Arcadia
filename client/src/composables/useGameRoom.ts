@@ -1,7 +1,8 @@
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { toast } from "vue3-toastify";
 import { useSocket } from "@/composables/useSocket";
 import type { Room } from "@/dtos/RoomDto";
+import type { GameOverEvent } from "@/dtos/SocketEventDto";
 
 const { socket } = useSocket();
 const room = ref<Room | null>(null);
@@ -38,13 +39,17 @@ socket.on("game_start", (data) => {
 	state.value = data.state;
 });
 
-socket.on("game_over", (data) => {
-	room.value = data.room;
-});
 socket.on("game_state", (data) => {
 	state.value = data.state;
 });
 
-export function useGameRoom() {
+export function useGameRoom(onGameOver?: (data: GameOverEvent) => void) {
+	onMounted(() => {
+		if (onGameOver) socket.on("game_over", onGameOver);
+	});
+	onUnmounted(() => {
+		if (onGameOver) socket.off("game_over", onGameOver);
+	});
+
 	return { room, state, connected };
 }

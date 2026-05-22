@@ -4,6 +4,7 @@
 			<div class="page-header">
 				<span class="label">host a game</span>
 				<h2 class="title">Choose your game</h2>
+				<p>More games to come soon!</p>
 			</div>
 
 			<Select v-if="selectOptions.length > 0" v-model="selected" :items="selectOptions" />
@@ -16,10 +17,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from "vue";
+import { ref, computed } from "vue";
 import { useQuery, useMutation } from "@tanstack/vue-query";
 import { usePlayerId } from "@/composables/usePlayerId";
 import { useNickname } from "@/composables/useNickname";
+import { useRouter } from "vue-router";
 
 import type { Game } from "@/dtos/GameDto";
 import type { NewRoom, Room } from "@/dtos/RoomDto";
@@ -28,9 +30,6 @@ import type { SelectItem } from "@/types/SelectItem";
 
 import Page from "@/components/Page.vue";
 import Select from "./Select.vue";
-
-import { ref } from "vue";
-import { useRouter } from "vue-router";
 
 const { data } = useQuery<Game[]>({
 	queryKey: ["games"],
