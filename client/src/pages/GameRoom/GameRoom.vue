@@ -98,8 +98,10 @@ watch(data, (newData) => {
 	}
 });
 
-const roomStatus = computed(
-	() => room.value?.status ?? (isPending.value ? "loading" : isError.value ? "error" : null)
+const roomStatus = computed(() =>
+	connected
+		? (room.value?.status ?? (isPending.value ? "loading" : isError.value ? "error" : null))
+		: "disconnected"
 );
 
 function onConnect() {

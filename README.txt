@@ -20,4 +20,3 @@ One stop shop for online games except not really
 
 - Add logic for someone joining halfway
 - Add logic for someone disconnecting halfway
-- Add disconnected state

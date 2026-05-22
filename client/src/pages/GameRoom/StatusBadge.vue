@@ -19,6 +19,7 @@ const statusClass = computed(
 			waiting: "yellow",
 			playing: "green",
 			over: "red",
+			disconnected: "red",
 		})[props.label ?? "nothing"]
 );
 </script>
