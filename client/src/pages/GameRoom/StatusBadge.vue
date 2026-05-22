@@ -26,6 +26,7 @@ const statusClass = computed(
 <style scoped>
 .room-status {
 	display: flex;
+	justify-content: end;
 	align-items: center;
 	gap: 8px;
 }
