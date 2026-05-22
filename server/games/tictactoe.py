@@ -8,7 +8,7 @@ class TicTacToe(BaseGame):
     NAME = "Tic Tac Toe"
     MIN_PLAYERS = 2
     MAX_PLAYERS = 2
-    TAGS = ["Quick", "Simple"]
+    TAGS = ["strategy", "classic"]
     ICON_NAME = "tic-tac-toe"
 
     def __init__(self, room_code, players, host_id):
