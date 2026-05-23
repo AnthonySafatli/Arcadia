@@ -1,8 +1,8 @@
 import random
 from typing import Callable
 
-from server.engine.base_game import BaseGame
-from server.engine.game_registry import register
+from engine.base_game import BaseGame
+from engine.game_registry import register
 
 MAX_LEVEL = {
     2: 8,

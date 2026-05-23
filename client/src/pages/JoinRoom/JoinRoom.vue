@@ -24,11 +24,15 @@
 				<input
 					ref="inputRef"
 					v-model="code"
+					type="text"
+					inputmode="text"
+					autocomplete="off"
+					autocorrect="off"
+					autocapitalize="characters"
+					spellcheck="false"
 					maxlength="6"
 					class="hidden-input"
-					@keydown.enter="join"
-					@blur="inputRef?.focus()"
-					autofocus />
+					@keydown.enter="join" />
 			</div>
 
 			<button class="btn btn-primary join-btn" :disabled="code.length < 6" @click="join">

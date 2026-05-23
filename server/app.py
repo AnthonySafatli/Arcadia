@@ -5,10 +5,10 @@ import os
 from flask import Flask, send_from_directory
 from flask_socketio import SocketIO
 
-from server.routes.api import api_bp
-from server.sockets.events import register_socket_events
+from routes.api import api_bp
+from sockets.events import register_socket_events
 
-import server.games
+import games
 
 # App setup
 
@@ -22,9 +22,11 @@ socketio = SocketIO(
     app,
     cors_allowed_origins=[
         "http://localhost:5050",
+        "https://localhost:5050",
         "http://127.0.0.1:5050",
-        "https://arcadia.anthonysafatli.ca",
+        "https://127.0.0.1:5050",
         "http://arcadia.anthonysafatli.ca",
+        "https://arcadia.anthonysafatli.ca",
     ],
     async_mode="eventlet",
 )

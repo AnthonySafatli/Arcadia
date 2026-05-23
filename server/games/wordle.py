@@ -2,8 +2,8 @@ import random
 import time
 from typing import Callable
 
-from server.engine.base_game import BaseGame
-from server.engine.game_registry import register
+from engine.base_game import BaseGame
+from engine.game_registry import register
 
 WORD_LIST = [
     "crane", "slate", "audio", "stare", "raise", "arose", "snare", "least",

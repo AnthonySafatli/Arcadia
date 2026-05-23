@@ -3,8 +3,8 @@ import time
 import random
 import string
 
-from server.models.player import Player
-from server.engine.base_game import BaseGame
+from models.player import Player
+from engine.base_game import BaseGame
 
 @dataclass
 class Room:

@@ -1,7 +1,7 @@
 from flask import request
 from flask_socketio import emit, join_room as sio_join_room, leave_room as sio_leave_room
 
-from server.engine import room_manager
+from engine import room_manager
 
 def register_socket_events(socketio_instance):
 

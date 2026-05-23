@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from server.engine import game_registry, room_manager
+from engine import game_registry, room_manager
 
 api_bp = Blueprint("api", __name__)
 
