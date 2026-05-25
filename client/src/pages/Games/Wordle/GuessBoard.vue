@@ -1,6 +1,13 @@
 <template>
-	<!-- GUESS BOARD -->
-	<div class="board">
+	<div class="board" @click="hiddenInput?.focus()">
+		<input
+			ref="hiddenInput"
+			class="hidden-input"
+			autocomplete="off"
+			autocorrect="off"
+			autocapitalize="off"
+			spellcheck="false"
+			@keydown="handleKey" />
 		<div
 			v-for="rowIndex in 6"
 			:key="rowIndex"
@@ -21,6 +28,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from "vue";
 import type { Guess } from "./WordleState";
 
 const props = defineProps<{
@@ -29,6 +37,23 @@ const props = defineProps<{
 	currentInput: string;
 	shakeRow: number | null;
 }>();
+
+const emit = defineEmits<{
+	(e: "key", key: string): void;
+}>();
+
+const hiddenInput = ref<HTMLInputElement | null>(null);
+
+onMounted(() => hiddenInput.value?.focus());
+
+function handleKey(e: KeyboardEvent) {
+	e.preventDefault();
+	if (e.key === "Enter" || e.key === "Backspace") {
+		emit("key", e.key);
+	} else if (/^[a-zA-Z]$/.test(e.key)) {
+		emit("key", e.key.toUpperCase());
+	}
+}
 
 function tileLetter(row: number, col: number): string {
 	if (row < props.guesses.length) {
@@ -45,7 +70,6 @@ function tileClass(row: number, col: number): string[] {
 	if (row < props.guesses.length) {
 		const g = props.guesses[row];
 		classes.push("tile--revealed", `tile--${g?.result[col]}`);
-		// stagger reveal animation
 		classes.push(`tile--delay-${col}`);
 	} else if (row === props.guesses.length && !props.finished) {
 		if (props.currentInput[col]) classes.push("tile--filled");
@@ -58,7 +82,15 @@ function tileClass(row: number, col: number): string[] {
 </script>
 
 <style scoped>
-/* ── Board ── */
+.hidden-input {
+	position: absolute;
+	opacity: 0;
+	width: 1px;
+	height: 1px;
+	pointer-events: none;
+}
+
+/* rest of styles unchanged */
 .board {
 	display: flex;
 	flex-direction: column;
@@ -96,7 +128,6 @@ function tileClass(row: number, col: number): string[] {
 	}
 }
 
-/* ── Tile ── */
 .tile {
 	width: 58px;
 	height: 58px;
@@ -135,7 +166,6 @@ function tileClass(row: number, col: number): string[] {
 	letter-spacing: 0.05em;
 }
 
-/* Revealed tiles — flip in */
 .tile--revealed {
 	animation: flip-in 300ms ease forwards;
 	border-color: transparent;

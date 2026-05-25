@@ -45,7 +45,9 @@
 					'player-node--hovering': playerHovering[player.player_id],
 				}">
 				<div class="player-avatar">
-					<span class="player-initial">{{ player.nickname }}</span>
+					<span class="player-star"
+						><StarIcon v-if="playerThrowingStars[player.player_id]" :size="20" active
+					/></span>
 					<div v-if="playerHovering[player.player_id]" class="player-hover-ring" />
 				</div>
 				<div class="player-cards-count">
@@ -61,7 +63,7 @@
 						>
 					</div>
 				</div>
-				<span class="player-name">{{ player.player_id }}</span>
+				<span class="player-name">{{ player.nickname }}</span>
 			</div>
 		</div>
 	</div>
@@ -74,11 +76,14 @@ import type { Player } from "@/dtos/PlayerDto";
 
 import { usePlayerId } from "@/composables/usePlayerId";
 
+import StarIcon from "./StarIcon.vue";
+
 const props = defineProps<{
 	placed: number[];
 	discarded: number[];
 	playerHands: Record<string, number>;
 	playerHovering: Record<string, boolean>;
+	playerThrowingStars: Record<string, boolean>;
 	players: Player[];
 }>();
 
@@ -307,11 +312,11 @@ watch(
 	}
 }
 
-.player-initial {
-	font-family: var(--font-mono);
-	font-size: 0.9rem;
-	font-weight: 500;
+.player-star {
 	color: var(--text-secondary);
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .player-cards-count {
@@ -353,7 +358,6 @@ watch(
 	font-family: var(--font-mono);
 	font-size: 0.6rem;
 	letter-spacing: 0.1em;
-	text-transform: uppercase;
 	color: var(--text-muted);
 	max-width: 64px;
 	overflow: hidden;

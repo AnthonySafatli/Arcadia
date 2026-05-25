@@ -23,7 +23,8 @@
 				:guesses="state.guesses"
 				:finished="state.finished"
 				:current-input="currentInput"
-				:shake-row="shakeRow" />
+				:shake-row="shakeRow"
+				@key="handleKey" />
 
 			<!-- ROUND OVER REVEAL -->
 			<div v-if="state.round_over" class="round-over-banner">
@@ -85,9 +86,8 @@ function triggerShake() {
 	setTimeout(() => (shakeRow.value = null), 500);
 }
 
-function handleKey(e: KeyboardEvent) {
+function handleKey(key: string) {
 	if (state.value.finished || state.value.round_over) return;
-	const key = e.key;
 
 	if (key === "Enter") {
 		if (currentInput.value.length < 5) {
@@ -109,9 +109,6 @@ function handleKey(e: KeyboardEvent) {
 		currentInput.value += key.toUpperCase();
 	}
 }
-
-onMounted(() => window.addEventListener("keydown", handleKey));
-onUnmounted(() => window.removeEventListener("keydown", handleKey));
 
 function endRound() {
 	sendAction(room.value?.code!, playerId, { type: "end_round" });

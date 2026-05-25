@@ -14,6 +14,7 @@
 				:discarded="state.discarded"
 				:player-hands="state.player_hands"
 				:player-hovering="state.player_hovering"
+				:player-throwing-stars="state.player_throwing_stars"
 				:players="room?.players ?? []" />
 
 			<YourHand
@@ -131,6 +132,7 @@ function focus() {
 
 function reset() {
 	sendAction(room.value?.code!, playerId, { type: "reset" });
+	gameOverStatus.value = null;
 }
 </script>
 
