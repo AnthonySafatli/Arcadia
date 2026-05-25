@@ -1,22 +1,20 @@
 import random
 import time
+import os
 from typing import Callable
 
 from engine.base_game import BaseGame
 from engine.game_registry import register
 
-WORD_LIST = [
-    "crane", "slate", "audio", "stare", "raise", "arose", "snare", "least",
-    "feast", "beast", "react", "trace", "place", "grace", "space", "brace",
-    "plane", "blend", "block", "clock", "clown", "crown", "blown", "brown",
-    "drape", "drive", "grove", "grope", "globe", "glove", "grave", "brave",
-    "shale", "share", "shame", "shade", "shake", "shape", "shore", "score",
-    "store", "stole", "stone", "stove", "spoke", "smoke", "smote", "slope",
-    "scope", "spore", "snore", "swore", "those", "chose", "close", "prose",
-    "prune", "prone", "prove", "trove", "drove", "drown", "frown", "grown",
-    "green", "greed", "greet", "creek", "cheek", "check", "chess", "chest",
-    "crest", "press", "dress", "bless", "flesh", "fresh", "trend", "blend",
-]
+import os
+print(os.path.dirname(__file__))
+
+base = os.path.dirname(__file__)
+path = os.path.join(base, "../resources/wordle-easy.txt")
+with open(path) as f:
+    WORD_LIST = [line.strip() for line in f]
+
+print(WORD_LIST)
 
 MAX_GUESSES = 6
 WORD_LENGTH = 5
