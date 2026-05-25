@@ -53,7 +53,10 @@ export function useGameRoom(onGameOver?: (data: GameOverEvent) => void) {
 	});
 	onUnmounted(() => {
 		if (onGameOver) socket.off("game_over", onGameOver);
+
 		connected.value = false;
+		room.value = null;
+		state.value = null;
 	});
 
 	return { room, state, connected };

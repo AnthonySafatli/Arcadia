@@ -7,6 +7,7 @@ import type {
 	GameStateEvent,
 	PlayerEvent,
 } from "@/dtos/SocketEventDto";
+import { onUnmounted } from "vue";
 
 export interface ServerToClientEvents {
 	joined: (data: JoinedEvent) => void;
@@ -56,6 +57,10 @@ export function useSocket() {
 	const sendAction = (roomCode: string, playerId: string, action: unknown) => {
 		socket.emit("action", { room_code: roomCode, player_id: playerId, action });
 	};
+
+	onUnmounted(() => {
+		disconnect();
+	});
 
 	return { socket, connect, disconnect, joinRoom, startGame, changeNickname, sendAction };
 }

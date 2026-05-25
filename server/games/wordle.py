@@ -14,8 +14,6 @@ path = os.path.join(base, "../resources/wordle-easy.txt")
 with open(path) as f:
     WORD_LIST = [line.strip() for line in f]
 
-print(WORD_LIST)
-
 MAX_GUESSES = 6
 WORD_LENGTH = 5
 

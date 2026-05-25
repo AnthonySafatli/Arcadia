@@ -90,6 +90,10 @@ const { data, isError, error, isPending } = useQuery<Room>({
 	},
 });
 
+watch(roomId, () => {
+	room.value = null;
+});
+
 watch(data, (newData) => {
 	if (!newData) return;
 	room.value = newData;
