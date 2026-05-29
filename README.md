@@ -5,6 +5,7 @@
 > An online, browser-based multiplayer game platform. The multiplayer code is fully abstracted away from game logic, making it trivial to add and update multiplayer games.
 
 🔗 **[Live Demo](https://arcadia.anthonysafatli.ca)**
+🌐 **[More Information](https://anthonysafatli.ca/Project/arcadia)**
 
 ## Features
 
