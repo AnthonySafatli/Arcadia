@@ -115,6 +115,7 @@ defineEmits<{
 
 .select-tags {
 	display: flex;
+	flex-wrap: wrap;
 	gap: 8px;
 	margin-top: 4px;
 }
@@ -129,6 +130,7 @@ defineEmits<{
 	border-radius: 3px;
 	padding: 2px 6px;
 	text-transform: uppercase;
+	white-space: nowrap;
 }
 
 .select-indicator {

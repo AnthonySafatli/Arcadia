@@ -5,7 +5,7 @@ import Page from "@/components/Page.vue";
 <template>
 	<Page page-class="home" glow-orb>
 		<div class="content">
-			<!-- Logo -->
+			<!-- Hero -->
 			<div class="logo-block">
 				<div class="logo-icon">
 					<img src="/icon.svg" alt="Logo" width="40" height="40" />
@@ -13,7 +13,7 @@ import Page from "@/components/Page.vue";
 				<h1 class="wordmark">arcadia</h1>
 			</div>
 
-			<p class="tagline">online. multiplayer. anytime.</p>
+			<p class="tagline">the online multiplayer arcade</p>
 
 			<div class="actions">
 				<router-link to="/host" class="btn btn-primary action-btn">
@@ -31,8 +31,6 @@ import Page from "@/components/Page.vue";
 					Join Game
 				</router-link>
 			</div>
-
-			<div class="version-tag">v0.0.1 — early access</div>
 		</div>
 	</Page>
 </template>
